@@ -2,10 +2,23 @@ const User = require('../models/user');
 
 // Function to create a user
 const createUser = async (username, displayName, password, profilePic) => {
-  const post = new User (
-    {username: username, displayName: displayName, password: password, profilePic: profilePic}
-  );
-// Now I need to check if the details are indeed valid (validation), I have the checks in the "local" signup component a(and as well in the login component to login), so I need to move this check to be used by the MVC structure.
-  return await user.save();
+  // Check if the DB if the username is already exists
+  const existingUser = await User.findOne({ username });
+  // If the username is already exists throw error indicates that.
+  if (existingUser) {
+    throw new Error('Username already taken. Please select a different username.');
+  }
+
+   // Create a new user
+   const newUser = new User({
+    username,
+    displayName,
+    password,
+    profilePic
+  });
+  return await newUser.save();
+
+// Here I need to have a check whether the username is already taken (which means he is in the DB already, and if so I need to prompt a message) - Done upstairs
+
 }
 module.exports = { createUser }
