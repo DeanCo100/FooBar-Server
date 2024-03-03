@@ -1,11 +1,12 @@
 const Post = require('../models/post');
 
-// Function to create a user
-const createPost = async (username, displayName, password, profilePic) => {
-  const user = new User (
-    {username: username, displayName: displayName, password: password, profilePic: profilePic}
-  );
 
-  return await user.save();
+
+  const createPost = async (username, time, profilePic, text, picture) => {
+    const post = new Post (
+      {username: username, time: time, profilePic: profilePic, text: text, picture: picture}
+    );
+
+  return await post.save();
 }
-module.exports = { createUser }
+module.exports = { createPost }
