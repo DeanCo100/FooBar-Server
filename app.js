@@ -22,7 +22,13 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 app.use(express.static('public'));
 
 const users = require('./routes/user');
-app.use('/users', users);
+const login = require('./routes/login');
+
+app.use('/api/users', users);
+// app.use('/api/tokens', tokens);
+app.use('/api/login', login);
+
+
 
 
 app.listen(process.env.PORT);
