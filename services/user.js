@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const jwt = require("jsonwebtoken")
 
 // Function to create a user
 const createUser = async (username, displayName, password, profilePic) => {
@@ -21,18 +22,47 @@ const createUser = async (username, displayName, password, profilePic) => {
 }
 
 
-const loginUser = async (username, password) => {
+const loginUser = async (req, res) => {
  // Find the user in the database based on the provided username
- const user = await User.findOne({ username });
-
- // If no user is found or the password doesn't match, throw an error
- if (!user || user.password != password) {
-   throw new Error('Incorrect username or password');
- }
-// If the user exists in the database
- return user;
+  const username = req.body.username;
+  const password = req.body.password;
+  const user = await User.findOne({ username });
+ //handling the case that indeed the user is found
+if (user && user.password === password) {
+  const token = tokenHandler(req, res);
+  return user;
+} else if (!user || user.password !== password) {
+  throw new Error('Incorrect username or password');
+}
 };
 
+
+
+const tokenHandler = (req,res) => {
+  if (req.headers.authorization) {
+    // Extract the token from that header
+    const token = req.headers.authorization.split(" ")[1];
+    try {
+      // Verify the token is valid
+      const data = jwt.verify(token, key);
+      console.log('The logged in user is: ' + data.username);
+      // Token validation was successful. Continue to the actual function (index)
+      return user;
+      } catch (err) {
+      return res.status(401).send("Invalid Token");
+      }
+    }else{
+      return req.setHeader('Authorization', generatetoken(req,res));
+
+    }
+}
+
+
+const generatetoken = (req,res) => {
+  const data = { username: req.body.username}
+  const token = jwt.sign(data, key,{ expiresIn:process.env.TOKEN_EXPIRATION })
+  res.status(201).json({ token })
+}
 
 
 module.exports = { createUser, loginUser }
