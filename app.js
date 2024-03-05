@@ -7,7 +7,7 @@ app.use(express.json());
 
 const cors = require('cors');
 app.use(cors());
-
+process.env.NODE_ENV ='local'
 const customEnv = require('custom-env');
 customEnv.env(process.env.NODE_ENV, './config');
 console.log(process.env.CONNECTION_STRING);
