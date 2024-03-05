@@ -29,8 +29,7 @@ const loginUser = async (req, res) => {
   const user = await User.findOne({ username });
  //handling the case that indeed the user is found
 if (user && user.password === password) {
-  const token = tokenHandler(req, res);
-  return user;
+    res.status(201).json({ token: generatetoken(req,res)});
 } else if (!user || user.password !== password) {
   throw new Error('Incorrect username or password');
 }
@@ -38,30 +37,31 @@ if (user && user.password === password) {
 
 
 
-const tokenHandler = (req,res) => {
-  if (req.headers.authorization) {
-    // Extract the token from that header
-    const token = req.headers.authorization.split(" ")[1];
-    try {
-      // Verify the token is valid
-      const data = jwt.verify(token, key);
-      console.log('The logged in user is: ' + data.username);
-      // Token validation was successful. Continue to the actual function (index)
-      return user;
-      } catch (err) {
-      return res.status(401).send("Invalid Token");
-      }
-    }else{
-      return req.setHeader('Authorization', generatetoken(req,res));
-
-    }
-}
+// const tokenHandler = (req,res) => {
+//   if (req.headers.authorization) {
+//     // Extract the token from that header
+//     const token = req.headers.authorization.split(" ")[1];
+//     try {
+//       // Verify the token is valid
+//       const data = jwt.verify(token, key);
+//       console.log('The logged in user is: ' + data.username);
+//       // Token validation was successful. Continue to the actual function (index)
+//       return user;
+//       } catch (err) {
+//         res.status(201).json({ token: generatetoken(req,res)});
+//       }
+//     }else{
+//       return res.status(403).send('Token required');
+//     }
+// }
 
 
 const generatetoken = (req,res) => {
   const data = { username: req.body.username}
+  const key = process.env.SECRET_KEY;
   const token = jwt.sign(data, key,{ expiresIn:process.env.TOKEN_EXPIRATION })
-  res.status(201).json({ token })
+  return token;
+ 
 }
 
 

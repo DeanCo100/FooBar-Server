@@ -20,7 +20,6 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const user = await userService.loginUser(req,res);
-    res.json(user);
   } catch (error) {
     res.status(401).json({ error: 'Incorrect username or password' });
   }
