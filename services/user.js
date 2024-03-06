@@ -36,26 +36,6 @@ if (user && user.password === password) {
 };
 
 
-
-// const tokenHandler = (req,res) => {
-//   if (req.headers.authorization) {
-//     // Extract the token from that header
-//     const token = req.headers.authorization.split(" ")[1];
-//     try {
-//       // Verify the token is valid
-//       const data = jwt.verify(token, key);
-//       console.log('The logged in user is: ' + data.username);
-//       // Token validation was successful. Continue to the actual function (index)
-//       return user;
-//       } catch (err) {
-//         res.status(201).json({ token: generatetoken(req,res)});
-//       }
-//     }else{
-//       return res.status(403).send('Token required');
-//     }
-// }
-
-
 const generatetoken = (req,res) => {
   const data = { username: req.body.username}
   const key = process.env.SECRET_KEY;
@@ -67,17 +47,3 @@ const generatetoken = (req,res) => {
 
 module.exports = { createUser, loginUser }
 
-
-
-// Function to generate a JWT to the user
-// const generateAndSaveToken = async (user) => {
-//   // Generate a JWT token
-//   const token = jwt.sign({ username: user.username }, 'secret_key', { expiresIn: '1h' });
-
-//   // Save the token to the database
-//   // Example code assuming User model has a tokens array field
-//   user.tokens.push(token);
-//   await user.save();
-
-//   return token;
-// };
