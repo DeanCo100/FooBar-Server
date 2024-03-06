@@ -35,15 +35,21 @@ if (user && user.password === password) {
 }
 };
 
+// A function to get the user's data:
+const getUserProfile = async (username) => {
+  return await User.findOne({ username }).select('username displayName profilePic');
+}
 
+
+//  A function to generate a unique token every time a user is logging in
 const generatetoken = (req,res) => {
   const data = { username: req.body.username}
   const key = process.env.SECRET_KEY;
   const token = jwt.sign(data, key,{ expiresIn:process.env.TOKEN_EXPIRATION })
   return token;
  
-}
+};
 
 
-module.exports = { createUser, loginUser }
+module.exports = { createUser, loginUser, getUserProfile }
 

@@ -24,5 +24,16 @@ const loginUser = async (req, res) => {
     res.status(401).json({ error: 'Incorrect username or password' });
   }
 };
-module.exports = { createUser, loginUser }
+// Function to handle the request to user data
+const getUserProfile = async (req, res) => {
+  const { username } = req.params;
+  try {
+      const userProfile = await userService.getUserProfile(username);
+      res.status(200).json(userProfile);
+  } catch (error) {
+      res.status(404).json({ error: 'User profile not found' });
+  }
+}
+
+module.exports = { createUser, loginUser, getUserProfile }
 // We need to give a JWT to the user when he log in.
