@@ -26,7 +26,7 @@ const login = require('./routes/login');
 
 app.use('/api/users', users);
 // app.use('/api/tokens', tokens);
-app.use('/api/login', login);
+app.use('/api/tokens', login);
 
 
 

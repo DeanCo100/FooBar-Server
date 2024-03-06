@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const key = process.env.SECRET_KEY;
+
 const isValidToken= (req, res, next) => {
     // If the request has an authorization header
     if (req.headers.authorization) {
@@ -12,6 +15,8 @@ const isValidToken= (req, res, next) => {
         res.redirect(301, '/api/login');
     }
     }
-    else
+    else {
     return res.status(403).send('Token required');
     }
+}
+    module.exports = isValidToken;
