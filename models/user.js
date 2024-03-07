@@ -15,9 +15,13 @@ const UserSchema = new Schema ({
     required: true
   },
   profilePic: {
-    type: String, // It whould be treated like a different type because its a picture, I need to figure it out.
+    type: String, 
     required: true
   }
+  // profilePic: {
+  //   type: String, // It whould be treated like a different type because its a picture, I need to figure it out.
+  //   required: true
+  // }
   // Maybe I need to add here a field of 'token' which will be the user's JWT
   
 
