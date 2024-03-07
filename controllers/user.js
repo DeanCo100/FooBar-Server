@@ -35,5 +35,39 @@ const getUserProfile = async (req, res) => {
   }
 }
 
-module.exports = { createUser, loginUser, getUserProfile }
+// Method to get user info by his id
+// REMARK: Need to add try-catch for edge cases 
+const getUser = async (req, res) => { 
+  try {
+    const user = await userService.getUserByUsername(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ error: ['User not found']})
+  }
+};
+
+
+// REMARK: Need to add try-catch for edge cases 
+const deleteUser = async (req, res) => {
+  try {
+    const user = await userService.deleteUser(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ error: ['User not found'] })
+  }
+};
+
+
+// REMARK: Need to add try-catch for edge cases 
+const updateUser = async (req, res) => {
+  const user = await userService.updateUser(req.params.id, req.body.displayName, req.body.profilePic);
+  if (!user) {
+    return res.status(404).json( { error: ['User not found'] });
+  }
+  res.json(user);
+};
+
+
+
+module.exports = { createUser, loginUser, getUserProfile, getUser, deleteUser, updateUser }
 // We need to give a JWT to the user when he log in.

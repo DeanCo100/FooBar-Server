@@ -35,6 +35,41 @@ if (user && user.password === password) {
 }
 };
 
+
+// Get single user info by his id
+const getUserByUsername = async (username) => {
+  // Find the user in the database based on the provided username
+  const user = await User.findOne({ username });
+  // Handling the case that indeed the user is found
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+};
+
+// Delete user with a given id
+const deleteUser = async (username) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  await user.deleteOne();
+  return user;
+};
+
+// Update user with a given id
+// REMARK: NOT FINISHED - PROTOTYPE FUNCTION
+const updateUser = async (id, displayName, profilePic) => {
+  const user = await getUserById(id);
+  if (!user) return null;
+  user.displayName = displayName;
+  user.profilePic = profilePic;
+  await user.save();
+  return user;
+};
+
+
+
 // A function to get the user's data:
 const getUserProfile = async (username) => {
   return await User.findOne({ username }).select('username displayName profilePic');
@@ -51,5 +86,5 @@ const generatetoken = (req,res) => {
 };
 
 
-module.exports = { createUser, loginUser, getUserProfile }
+module.exports = { createUser, loginUser, getUserProfile, getUserByUsername, deleteUser, updateUser }
 
