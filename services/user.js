@@ -47,48 +47,57 @@ if (user && user.password === password) {
 };
 
 
+// Get single user info by his id
+const getUserByUsername = async (username) => {
+  // Find the user in the database based on the provided username
+  const user = await User.findOne({ username });
+  // Handling the case that indeed the user is found
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+};
 
-// const tokenHandler = (req,res) => {
-//   if (req.headers.authorization) {
-//     // Extract the token from that header
-//     const token = req.headers.authorization.split(" ")[1];
-//     try {
-//       // Verify the token is valid
-//       const data = jwt.verify(token, key);
-//       console.log('The logged in user is: ' + data.username);
-//       // Token validation was successful. Continue to the actual function (index)
-//       return user;
-//       } catch (err) {
-//         res.status(201).json({ token: generatetoken(req,res)});
-//       }
-//     }else{
-//       return res.status(403).send('Token required');
-//     }
-// }
+// Delete user with a given id
+const deleteUser = async (username) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  await user.deleteOne();
+  return user;
+};
+
+// Update user with a given id
+// REMARK: NOT FINISHED - PROTOTYPE FUNCTION
+const updateUser = async (id, displayName, profilePic) => {
+  const user = await getUserById(id);
+  if (!user) return null;
+  user.displayName = displayName;
+  user.profilePic = profilePic;
+  await user.save();
+  return user;
+};
 
 
-const generatetoken = (user) => {
-  const data =  {username: user.username};
+
+
+// A function to get the user's data:
+const getUserProfile = async (username) => {
+  return await User.findOne({ username }).select('username displayName profilePic');
+}
+
+
+//  A function to generate a unique token every time a user is logging in
+const generatetoken = (req,res) => {
+  const data = { username: req.body.username}
+
   const key = process.env.SECRET_KEY;
   const token = jwt.sign(data, key,{ expiresIn:process.env.TOKEN_EXPIRATION })
   return token;
  
-}
+};
 
 
-module.exports = { createUser, loginUser }
+module.exports = { createUser, loginUser, getUserProfile, getUserByUsername, deleteUser, updateUser }
 
-
-
-// Function to generate a JWT to the user
-// const generateAndSaveToken = async (user) => {
-//   // Generate a JWT token
-//   const token = jwt.sign({ username: user.username }, 'secret_key', { expiresIn: '1h' });
-
-//   // Save the token to the database
-//   // Example code assuming User model has a tokens array field
-//   user.tokens.push(token);
-//   await user.save();
-
-//   return token;
-// };
