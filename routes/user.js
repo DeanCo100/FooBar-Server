@@ -9,4 +9,9 @@ router.route('/').post(userController.createUser);
 // A route to get the user's data
 router.get('/:username', isValidToken, userController.getUserProfile); // Protect route
 
+router.route('/:id')
+    .get(userController.getUser)
+    .patch(userController.updateUser)
+    .delete(userController.deleteUser)
+
 module.exports = router;

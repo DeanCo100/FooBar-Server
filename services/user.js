@@ -22,18 +22,65 @@ const createUser = async (username, displayName, password, profilePic) => {
 }
 
 
-const loginUser = async (req, res) => {
+const loginUser = async (username, password) => {
  // Find the user in the database based on the provided username
-  const username = req.body.username;
-  const password = req.body.password;
+  // const username = req.body.username;
+  // const password = req.body.password;
   const user = await User.findOne({ username });
  //handling the case that indeed the user is found
+// if (user && user.password === password) {
+//   const token =generatetoken(req,res);
+//   res.status(201).json({ token: generatetoken(req,res)});
+   
+// } else if (!user || user.password !== password) {
+//   throw new Error('Incorrect username or password');
+// }
 if (user && user.password === password) {
-    res.status(201).json({ token: generatetoken(req,res)});
-} else if (!user || user.password !== password) {
-  throw new Error('Incorrect username or password');
+  const token = generatetoken(user); // Adjust according to how you generate tokens
+  return {
+    token:token,
+  };
+} else {
+  // Instead of throwing here, we simply return null or throw a custom error that the controller can catch
+  return null;
 }
 };
+
+
+// Get single user info by his id
+const getUserByUsername = async (username) => {
+  // Find the user in the database based on the provided username
+  const user = await User.findOne({ username });
+  // Handling the case that indeed the user is found
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+};
+
+// Delete user with a given id
+const deleteUser = async (username) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  await user.deleteOne();
+  return user;
+};
+
+// Update user with a given id
+// REMARK: NOT FINISHED - PROTOTYPE FUNCTION
+const updateUser = async (id, displayName, profilePic) => {
+  const user = await getUserById(id);
+  if (!user) return null;
+  user.displayName = displayName;
+  user.profilePic = profilePic;
+  await user.save();
+  return user;
+};
+
+
+
 
 // A function to get the user's data:
 const getUserProfile = async (username) => {
@@ -44,6 +91,7 @@ const getUserProfile = async (username) => {
 //  A function to generate a unique token every time a user is logging in
 const generatetoken = (req,res) => {
   const data = { username: req.body.username}
+
   const key = process.env.SECRET_KEY;
   const token = jwt.sign(data, key,{ expiresIn:process.env.TOKEN_EXPIRATION })
   return token;
@@ -51,5 +99,5 @@ const generatetoken = (req,res) => {
 };
 
 
-module.exports = { createUser, loginUser, getUserProfile }
+module.exports = { createUser, loginUser, getUserProfile, getUserByUsername, deleteUser, updateUser }
 
