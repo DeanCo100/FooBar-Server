@@ -1,3 +1,4 @@
+// Import necessary modules and dependencies
 const User = require('../models/user');
 const jwt = require("jsonwebtoken")
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -9,7 +10,6 @@ const createUser = async (username, displayName, password, profilePic) => {
   if (existingUser) {
     throw new Error('Username already taken. Please select a different username');
   }
-
    // Create a new user
    const newUser = new User({
     username,
@@ -18,36 +18,24 @@ const createUser = async (username, displayName, password, profilePic) => {
     profilePic
   });
   return await newUser.save();
-
 }
 
-
-const loginUser = async (username, password) => {
+// Function to handle user login
+const loginUser = async (req, res) => {
  // Find the user in the database based on the provided username
-  // const username = req.body.username;
-  // const password = req.body.password;
+  const username = req.body.username;
+  const password = req.body.password;
   const user = await User.findOne({ username });
  //handling the case that indeed the user is found
-// if (user && user.password === password) {
-//   const token =generatetoken(req,res);
-//   res.status(201).json({ token: generatetoken(req,res)});
-   
-// } else if (!user || user.password !== password) {
-//   throw new Error('Incorrect username or password');
-// }
 if (user && user.password === password) {
-  const token = generatetoken(user); // Adjust according to how you generate tokens
-  return {
-    token:token,
-  };
-} else {
-  // Instead of throwing here, we simply return null or throw a custom error that the controller can catch
-  return null;
+    res.status(201).json({ token: generatetoken(req,res)});
+} else if (!user || user.password !== password) {
+  throw new Error('Incorrect username or password');
 }
 };
 
 
-// Get single user info by his id
+// Function to get a single user's information by username
 const getUserByUsername = async (username) => {
   // Find the user in the database based on the provided username
   const user = await User.findOne({ username });
@@ -58,7 +46,7 @@ const getUserByUsername = async (username) => {
   return user;
 };
 
-// Delete user with a given id
+// Function to delete a user by username
 const deleteUser = async (username) => {
   const user = await getUserByUsername(username);
   if (!user) {
@@ -68,30 +56,28 @@ const deleteUser = async (username) => {
   return user;
 };
 
-// Update user with a given id
-// REMARK: NOT FINISHED - PROTOTYPE FUNCTION
-const updateUser = async (id, displayName, profilePic) => {
-  const user = await getUserById(id);
-  if (!user) return null;
+// Function to update user information by username
+const updateUser = async (username, displayName, profilePic) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new Error('User not found');
+  }
   user.displayName = displayName;
   user.profilePic = profilePic;
-  await user.save();
-  return user;
+  return await user.save();
 };
 
-
-
-
-// A function to get the user's data:
+// Function to get a user's profile by username
 const getUserProfile = async (username) => {
   return await User.findOne({ username }).select('username displayName profilePic');
 }
 
-
 //  A function to generate a unique token every time a user is logging in
 const generatetoken = (req,res) => {
   const data = { username: req.body.username}
+
   const token = jwt.sign(data, SECRET_KEY,{ expiresIn:process.env.TOKEN_EXPIRATION })
+
   return token;
  
 };
@@ -239,4 +225,5 @@ const deleteFriend = async (username,friendUsername) => {
 module.exports = { createUser, loginUser, getUserProfile,
    getUserByUsername, deleteUser, updateUser, getFriendsList,
     newFriendRequest, acceptFriendRequest, deleteFriend, generatetoken }; 
+
 
