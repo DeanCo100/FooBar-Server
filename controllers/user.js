@@ -1,82 +1,64 @@
+// Import the user service for handling user-related operations
 const userService = require ('../services/user');
 
-// Try to create a user, if there is an error I catch it and present on the user's screen the relevant message by the client fucntion.
+// Function to create a new user
 const createUser = async (req, res) => {
   try {
-    res.status(201).json(await userService.createUser(req.body.username, req.body.displayName, req.body.password, req.body.profilePic));
+    // Attempt to create a user and respond with the result
+    res.json(await userService.createUser(req.body.username, req.body.displayName, req.body.password, req.body.profilePic));
   } catch (error) {
+    // If an error occurs (e.g., username already taken), respond with an error message
     res.status(401).json({error: 'Username already taken. Please select a different username'})
   }
 }
-// Try to login the user, if there is an error I catch it and present on the user's screen the relevant message by the client function.
-// const loginUser = async (req, res) => {
-//   try {
-//     const user = await userService.loginUser(req.body.username, req.body.password);
-//     res.json(user);
-//   } catch (error) {
-//     res.status(401).json({ error: 'Incorrect username or password' });
-//   }
-// };
+
+// Function to handle user login
 const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const token = await userService.loginUser(username,password);
-    if (token) {
-      // If user is found and password matches, send success response
-      res.status(201).json(token);
-    } else {
-      // If user is null, it means incorrect username or password
-      res.status(401).json({ message: 'Incorrect username or password' });
-    }
-  }  catch (error) {
-    // Handle unexpected errors
-    res.status(500).json({ error: 'An error occurred while processing your request.' });
+    // Attempt to log in the user and respond with the result
+    const user = await userService.loginUser(req,res);
+  } catch (error) {
+    // If an error occurs (e.g., incorrect username or password), respond with an error message
+    res.status(401).json({ error: 'Incorrect username or password' });
   }
 };
+
 // Function to handle the request to user data
 const getUserProfile = async (req, res) => {
-  const { username } = req.params;
   try {
-      const userProfile = await userService.getUserProfile(username);
+      // Attempt to retrieve user profile data and respond with the result
+      const userProfile = await userService.getUserProfile(req.params.id);
       res.status(200).json(userProfile);
   } catch (error) {
+      // If an error occurs (e.g., user profile not found), respond with an error message
       res.status(404).json({ error: 'User profile not found' });
   }
 }
 
-// Method to get user info by his id
-// REMARK: Need to add try-catch for edge cases 
-const getUser = async (req, res) => { 
-  try {
-    const user = await userService.getUserByUsername(req.params.id);
-    res.json(user);
-  } catch (error) {
-    res.status(404).json({ error: ['User not found']})
-  }
-};
-
-
-// REMARK: Need to add try-catch for edge cases 
+// Function to delete a user
 const deleteUser = async (req, res) => {
   try {
+    // Attempt to delete a user and respond with the result
     const user = await userService.deleteUser(req.params.id);
     res.json(user);
   } catch (error) {
-    res.status(404).json({ error: ['User not found'] })
+    // If an error occurs (e.g., user not found), respond with an error message
+    res.status(404).json({ error: ['User not found'] });
   }
 };
 
-
-// REMARK: Need to add try-catch for edge cases 
+// Function to update user profile
 const updateUser = async (req, res) => {
-  const user = await userService.updateUser(req.params.id, req.body.displayName, req.body.profilePic);
-  if (!user) {
-    return res.status(404).json( { error: ['User not found'] });
+  try {
+    // Attempt to update user profile and respond with the result
+    const user = await userService.updateUser(req.params.id, req.body.displayName,
+       req.body.profilePic);
+    res.json(user);
+  } catch (error) {
+    // If an error occurs (e.g., user not found), respond with an error message
+    res.status(404).json({ error: ['User not found'] });
   }
-  res.json(user);
 };
 
-
-
-module.exports = { createUser, loginUser, getUserProfile, getUser, deleteUser, updateUser }
-// We need to give a JWT to the user when he log in.
+// Export all controller functions for use in routes
+module.exports = { createUser, loginUser, getUserProfile, deleteUser, updateUser }
