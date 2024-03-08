@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const key = process.env.SECRET_KEY;
-
+//a middleware to check if the token is valid
 const isValidToken= (req, res, next) => {
     // If the request has an authorization header
     if (req.headers.authorization) {
@@ -12,7 +12,7 @@ const isValidToken= (req, res, next) => {
     // Token validation was successful. Continue to the actual function (index)
     return next()
     } catch (err) {
-        res.redirect(301, '/api/login');
+        res.status(500).send('Internal server error');
     }
     }
     else {

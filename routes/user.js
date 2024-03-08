@@ -1,5 +1,8 @@
 const userController = require('../controllers/user');
 const isValidToken = require('../middleware/tokenChecker');
+const compTokenId = require('../middleware/compTokenId');
+const friendsChecker = require('../middleware/friendChecker');
+const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfChecker');
 const express = require('express');
 var router = express.Router();
 
@@ -13,5 +16,16 @@ router.route('/:id')
     .get(userController.getUser)
     .patch(userController.updateUser)
     .delete(userController.deleteUser)
+
+//routes for getting friends list, new friend request
+router.route('/:id/friends')
+    .get(friendsOrHimselfChecker,userController.getFriendsList)
+    .post(userController.newFriendRequest)
+
+//routes for accepting friend request and deleting friend
+router.route('/:id/friends/:fid')
+            .patch(compTokenId,userController.acceptFriendRequest)
+            .delete(compTokenId,userController.deleteFriend)
+
 
 module.exports = router;
