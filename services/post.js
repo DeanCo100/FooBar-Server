@@ -1,13 +1,13 @@
 const Post = require('../models/post');
 
-const createPost = async (posterUsername ,username, time, profilePic, text, picture) => {
+const createPost = async (posterUsername ,username, userPic, postText, postImage, postTime) => {
     const newPost = new Post ({ 
       posterUsername,
       username, 
-      time, 
-      profilePic,
-      text, 
-      picture
+      userPic,
+      postText,
+      postImage,
+      postTime
     });
   return await newPost.save();
 };
@@ -26,8 +26,8 @@ const updatePost = async (pid, newText, newPicture) => {
   if (!post){
     throw new Error('Post not found');
   }
-  post.text = newText;
-  post.picture = newPicture;
+  post.postText = newText;
+  post.postImage = newPicture;
   return await post.save;
 };
 

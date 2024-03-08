@@ -11,7 +11,18 @@ const PostSchema = new Schema ({
     type: String,
     required: true
   }, //**** Maybe I need to have the token aswell here, to identify the user's posts */
-  time: {
+  userPic: { // THE USER'S PICTURE
+    type: String, // It whould be treated like a different type because its a picture, I need to figure it out.
+    required: true
+  },
+  postText : {
+    type: String,
+    required: true
+  }, 
+  postImage: {
+    type: String // Need to figute out what type to use
+  },
+  postTime: {
     type: String,
     default: () => {
         const now = new Date();
@@ -25,17 +36,6 @@ const PostSchema = new Schema ({
         // Construct the string in the desired format: YYYY-MM-DD HH:mm
         return `${year}-${month}-${day} ${hour}:${minutes}`;
     }
-  },
-  profilePic: { // THE USER'S PICTURE
-    type: String, // It whould be treated like a different type because its a picture, I need to figure it out.
-    required: true
-  },
-  text : {
-    type: String,
-    required: true
-  }, 
-  picture: {
-    type: String // Need to figute out what type to use
   },
 })
 

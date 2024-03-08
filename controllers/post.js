@@ -5,8 +5,7 @@ const postService = require ('../services/post');
 const createPost = async (req, res) => {
   //  I need to figure out how to use the user's picture and username.
   try {
-      res.json(await postService.createPost(req.body.posterUsername,req.body.username,
-        req.body.time, req.body.profilePic, req.body.text, req.body.picture));
+      res.json(await postService.createPost(req.body.posterUsername,req.body.username, req.body.userPic, req.body.postText, req.body.postImage, req.body.postTime));
   } catch (error) {
       // Handle errors
       console.log(error);
@@ -22,8 +21,8 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     // Maybe need to change to : req.body.pid if will decide to add pid field to model
-    const post = await postService.updatePost(req.params.id, req.body.text,
-      req.body.picture);
+    const post = await postService.updatePost(req.params.id, req.body.postText,
+      req.body.postImage);
     res.json(post);
   } catch (error) {
     res.status(404).json({ error: ['Post not found'] });
