@@ -1,6 +1,9 @@
 // Import necessary modules and middleware
 const userController = require('../controllers/user');
 const isValidToken = require('../middleware/tokenChecker');
+const compTokenId = require('../middleware/compTokenId');
+const friendsChecker = require('../middleware/friendChecker');
+const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfChecker');
 const express = require('express');
 
 // Create a router instance
@@ -23,5 +26,17 @@ router.patch('/:id', isValidToken, userController.updateUser);
 // Requires a valid token for authentication
 router.delete('/:id', isValidToken, userController.deleteUser);
 
-// Export the router for use in the application
+
+//routes for getting friends list, new friend request
+router.route('/:id/friends')
+    .get(friendsOrHimselfChecker,userController.getFriendsList)
+    .post(userController.newFriendRequest)
+
+//routes for accepting friend request and deleting friend
+router.route('/:id/friends/:fid')
+            .patch(compTokenId,userController.acceptFriendRequest)
+            .delete(compTokenId,userController.deleteFriend)
+
+
+
 module.exports = router;
