@@ -7,10 +7,13 @@ var router = express.Router();
 router.route('/').post(userController.createUser);
 // A route to get the user's data
 router.get('/:username', isValidToken, userController.getUserProfile); // Protect route
+router.get('/:id', isValidToken,userController.getUser);
+router.patch('/:id', isValidToken, userController.updateUser);
+router.delete('/:id', isValidToken, userController.deleteUser);
+//router.route('/:id')
+//    .get(isValidToken ,userController.getUser)
+//    .patch(isValidToken, userController.updateUser)
+//    .delete(isValidToken, userController.deleteUser)
 
-router.route('/:id')
-    .get(userController.getUser)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser)
 
 module.exports = router;

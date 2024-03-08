@@ -58,14 +58,14 @@ const deleteUser = async (username) => {
 };
 
 // Update user with a given id
-// REMARK: NOT FINISHED - PROTOTYPE FUNCTION
-const updateUser = async (id, displayName, profilePic) => {
-  const user = await getUserById(id);
-  if (!user) return null;
+const updateUser = async (username, displayName, profilePic) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw new Error('User not found');
+  }
   user.displayName = displayName;
   user.profilePic = profilePic;
-  await user.save();
-  return user;
+  return await user.save();
 };
 
 
