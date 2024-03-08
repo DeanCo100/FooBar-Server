@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema ({
+  
+  posterUsername: { // THE USER'S USERNAME
+    type: String,
+    required: true
+  },
   username: { //THE USER'S DISPLAY NAME
     type: String,
     required: true

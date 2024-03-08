@@ -14,11 +14,14 @@ const UserSchema = new Schema ({
     type: String,
     required: true
   },
+  
   profilePic: {
     type: String, 
     required: true
   },
+
   friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+
   friendRequests: {
     received: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     sent: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
