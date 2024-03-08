@@ -1,9 +1,10 @@
 // Import necessary modules and middleware
 const userController = require('../controllers/user');
+const postController = require('../controllers/post');
 const isValidToken = require('../middleware/tokenChecker');
 const compTokenId = require('../middleware/compTokenId');
-const friendsChecker = require('../middleware/friendChecker');
-const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfChecker');
+const friendChecker = require('../middleware/friendsCheck')
+const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfCheck');
 const express = require('express');
 
 // Create a router instance
@@ -37,6 +38,14 @@ router.route('/:id/friends/:fid')
             .patch(compTokenId,userController.acceptFriendRequest)
             .delete(compTokenId,userController.deleteFriend)
 
+// //routes for updatind and deleting a post
+router.route('/:id/posts/:pid')
+            .patch(isValidToken, postController.updatePost)
+            .delete(isValidToken, postController.deletePost)
 
-
+//routes for creating a post and getting all posts           
+router.route('/:id/posts')
+            // maybe need to add another middleware method
+            //.get(isValidToken,postController.getAllPosts)
+            .post(isValidToken,postController.createPost)
 module.exports = router;

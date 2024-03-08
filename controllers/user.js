@@ -108,7 +108,7 @@ const deleteFriend = async (req, res) => {
 
 
 
-module.exports = { createUser, loginUser, getUserProfile, getUser, deleteUser,
+module.exports = { createUser, loginUser, getUserProfile, deleteUser,
    updateUser,deleteFriend,acceptFriendRequest,newFriendRequest,getFriendsList }
 // We need to give a JWT to the user when he log in.
 

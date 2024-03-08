@@ -27,3 +27,4 @@ function verifyUser(req, res, next) {
     res.status(500).send('Invalid or expired token');
   }
 }
+module.exports = verifyUser;
