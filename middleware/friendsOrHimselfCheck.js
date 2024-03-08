@@ -38,3 +38,4 @@ async function friendsOrHimselfCheck(req, res, next) {
     res.status(500).send('Invalid or expired token');
   }
 }
+module.exports = friendsOrHimselfCheck;

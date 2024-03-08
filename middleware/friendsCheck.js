@@ -1,5 +1,4 @@
-const User = mongoose.model('User'); 
-
+//const User = mongoose.model('User'); 
 // Middleware to check friendship
 async function checkFriendship(req, res, next) {
   const username = req.params.id;
@@ -26,3 +25,4 @@ async function checkFriendship(req, res, next) {
     res.status(500).send('Internal server error');
   }
 }
+  module.exports = checkFriendship;
