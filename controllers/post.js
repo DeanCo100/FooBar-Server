@@ -5,8 +5,8 @@ const postService = require ('../services/post');
 const createPost = async (req, res) => {
   //  I need to figure out how to use the user's picture and username.
   try {
-      res.json(await postService.createPost(req.body.username, req.body.time,
-         req.body.profilePic, req.body.text, req.body.picture));
+      res.json(await postService.createPost(req.body.posterUsername,req.body.username,
+        req.body.time, req.body.profilePic, req.body.text, req.body.picture));
   } catch (error) {
       // Handle errors
       console.log(error);

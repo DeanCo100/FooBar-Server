@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 var app = express();
 
 // Middleware setup
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({limit: '20mb',extended: true}));
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(express.json({ limit: '20mb' }));
 app.use(cors());
