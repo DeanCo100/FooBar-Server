@@ -97,14 +97,19 @@ const getFriendPosts = async (token, usernameFriend) => {
   if (!loggedInUser) {
      throw new Error('User not found');
   }
-  const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
-  if (areFriends) {
-      return { areFriends: true, friendPosts: desiredUser.posts};
+  if (loggedInUsername === usernameFriend) {
+    // If the logged-in user is viewing their own posts
+    return { areFriends: true, friendPosts: desiredUser.posts };
   } else {
+    const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
+    if (areFriends) {
+      return { areFriends: true, friendPosts: desiredUser.posts };
+    } else {
       // If they are not friends, respond with an error message
       return { areFriends: false, friendPosts: [] };
     }
-  };
+  }
+};
 
 // Service function to fetch all posts in descending order by creation date
 const getAllPosts = async () => {
