@@ -13,12 +13,13 @@ const createPost = async (posterUsername ,username, userPic, postText, postImage
 };
 
 const getPostById = async (pid) => {
-  const post = await Post.findOne({ pid });
+  //const post = await Post.findOne({ _id: pid });
+  const post = await Post.findById(pid);
   if (!post) {
     throw new Error('Post not found');
   }
   return post;
-}
+};
 
 // Function to update post by id
 const updatePost = async (pid, newText, newPicture) => {
@@ -28,7 +29,7 @@ const updatePost = async (pid, newText, newPicture) => {
   }
   post.postText = newText;
   post.postImage = newPicture;
-  return await post.save;
+  return await post.save();
 };
 
 // Function to delete post by id
@@ -41,5 +42,6 @@ const deletePost = async (pid) => {
   return post;
 
 };
+
 
 module.exports = { createPost, getPostById ,updatePost, deletePost }
