@@ -1,5 +1,6 @@
 // Import necessary modules and dependencies
 const User = require('../models/user');
+const Post = require('../models/post');
 const jwt = require("jsonwebtoken")
 const SECRET_KEY = process.env.SECRET_KEY;
 // Function to create a user
@@ -48,23 +49,42 @@ const getUserByUsername = async (username) => {
 
 // Function to delete a user by username
 const deleteUser = async (username) => {
+  // Find the user by username
   const user = await getUserByUsername(username);
   if (!user) {
     throw new Error('User not found');
   }
+  // Find all posts associated with the user
+  const userPosts = await Post.find({ posterUsername: username });
+  // Delete each post from the Posts database
+  await Promise.all(userPosts.map(async (post) => {
+    await post.deleteOne();
+  }));
+  // Delete the user
   await user.deleteOne();
   return user;
 };
 
 // Function to update user information by username
 const updateUser = async (username, displayName, profilePic) => {
+  // Find the user by username
   const user = await getUserByUsername(username);
   if (!user) {
     throw new Error('User not found');
   }
+  // Update user information
   user.displayName = displayName;
   user.profilePic = profilePic;
-  return await user.save();
+  // Save the updated user document
+  await user.save();
+  // Update all posts associated with the user
+  const userPosts = await Post.find({ posterUsername: username });
+  await Promise.all(userPosts.map(async (post) => {
+    post.username = displayName;
+    post.userPic = profilePic;
+    await post.save();
+  }));
+  return user;
 };
 
 // Function to get a user's profile by username

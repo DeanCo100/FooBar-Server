@@ -26,8 +26,10 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 // Define and mount routes
 const users = require('./routes/user');
 const login = require('./routes/login');
+const posts = require('./routes/post');
 app.use('/api/users', users);
 app.use('/api/tokens', login);
+app.use('/api/posts', posts);
 
 // Start the server on the specified port
 app.listen(process.env.PORT);
