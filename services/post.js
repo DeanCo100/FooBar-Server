@@ -1,5 +1,8 @@
 const Post = require('../models/post');
 const User = require('../models/user');
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.SECRET_KEY;
+
 
 const createPost = async (posterUsername ,username, userPic, postText, postImage, postTime) => {
   // Save the new post
@@ -80,8 +83,34 @@ const deletePost = async (pid) => {
   return post;
 };
 
-const getFeedPosts = async () => {
-  return;
-}
+// Function to get posts of a friend
+const getFriendPosts = async (token, usernameFriend) => {
+  // Decode the token to get the username of the logged-in user
+  const decoded = jwt.verify(token, SECRET_KEY);
+  const loggedInUsername = decoded.username;
+  // Check if the logged-in user and the poster are friends
+  const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
+  const desiredUser = await User.findOne({ username: usernameFriend });
+  if (!loggedInUser) {
+     throw new Error('User not found');
+  }
+  const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
+  if (areFriends) {
+      return { areFriends: true, friendPosts: desiredUser.posts};
+  } else {
+      // If they are not friends, respond with an error message
+      return { areFriends: false, friendPosts: [] };
+    }
+  };
 
-module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts }
+// Service function to fetch all posts
+const getAllPosts = async () => {
+    // Fetch all posts from the database
+    const posts = await Post.find();
+    if (!posts) {
+      throw new Error('There are no posts yet');
+    }
+    return posts;
+};
+
+module.exports = { createPost, getPostById ,updatePost, deletePost, getAllPosts, getFriendPosts}
