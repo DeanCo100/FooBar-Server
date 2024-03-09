@@ -1,6 +1,6 @@
 // Import necessary modules and middleware
 const userController = require('../controllers/user');
-// const postController = require('../controllers/post');
+const postController = require('../controllers/post');
 
 const isValidToken = require('../middleware/tokenChecker');
 const compTokenId = require('../middleware/compTokenId');
@@ -40,16 +40,15 @@ router.route('/:id/friends')
 router.route('/:id/friends/:fid')
             .patch(compTokenId,userController.acceptFriendRequest)
             .delete(compTokenId,userController.deleteFriend)
+//routes for updatind and deleting a post
+router.route('/:id/posts/:pid')
+             .patch(isValidToken, postController.updatePost)
+             .delete(isValidToken, postController.deletePost)
 
-// // //routes for updatind and deleting a post
-// router.route('/:id/posts/:pid')
-//             .patch(isValidToken, postController.updatePost)
-//             .delete(isValidToken, postController.deletePost)
-
-// //routes for creating a post and getting all posts           
-// router.route('/:id/posts')
-//             // maybe need to add another middleware method
-//             //.get(isValidToken,postController.getAllPosts)
-//             .post(isValidToken,postController.createPost)
+//routes for creating a post and getting all posts           
+router.route('/:id/posts')
+             // maybe need to add another middleware method
+             //.get(isValidToken,postController.getAllPosts)
+             .post(isValidToken,postController.createPost)
 
 module.exports = router;

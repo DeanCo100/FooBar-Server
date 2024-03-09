@@ -21,7 +21,7 @@ const createPost = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     // Maybe need to change to : req.body.pid if will decide to add pid field to model
-    const post = await postService.updatePost(req.params.id, req.body.postText,
+    const post = await postService.updatePost(req.params.pid, req.body.postText,
       req.body.postImage);
     res.json(post);
   } catch (error) {
@@ -35,13 +35,14 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   try {
     // Maybe need to change to : req.body.pid if will decide to add pid field to model
-    const post = await postService.deletePost(req.params.id);
-    res.json(post);
+    const deletedPost = await postService.deletePost(req.params.pid);
+    res.json(deletedPost);
   } catch (error) {
     res.status(404).json({ error: ['Post not found'] });
   }
-
 };
+
+
 
 module.exports = { createPost, updatePost, deletePost }
 // We need to give a JWT to the user when he log in.
