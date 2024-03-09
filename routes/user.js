@@ -28,13 +28,16 @@ router.patch('/:id', isValidToken, userController.updateUser);
 // Requires a valid token for authentication
 router.delete('/:id', isValidToken, userController.deleteUser);
 
+router.post('/:id/friends', isValidToken, userController.sendFriendRequest);
+
+// Router to the user's friend requests
+router.get('/:id/friend-requests', isValidToken, userController.getFriendRequests);
 
 
-
-//routes for getting friends list, new friend request
-router.route('/:id/friends')
-    .get(friendsOrHimselfChecker,userController.getFriendsList)
-    .post(userController.newFriendRequest)
+// //routes for getting friends list, new friend request
+// router.route('/:id/friends')
+//     .get(friendsOrHimselfChecker,userController.getFriendsList)
+//     .post(userController.newFriendRequest)
 
 //routes for accepting friend request and deleting friend
 router.route('/:id/friends/:fid')

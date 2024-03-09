@@ -239,11 +239,41 @@ const deleteFriend = async (username,friendUsername) => {
   }
 };
 
+// Service function to send friend requests
+const sendFriendRequest = async (username, friendUsername) => {
+  try {
+    // Send a POST request to the server to send the friend request
+    const response = await axios.post(`http://localhost:8080/api/users/send-friend-request`, {
+      username,
+      friendId: friendUsername
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to send friend request. Please try again.');
+  }
+};
 
+// Service function to fetch friend requests received by the user
+const getFriendRequests = async (username) => {
+  try {
+    console.log(username);
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Return the received friend requests
+    return user.friendRequests.received;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 
 module.exports = { createUser, loginUser, getUserProfile,
    getUserByUsername, deleteUser, updateUser, getFriendsList,
-    newFriendRequest, acceptFriendRequest, deleteFriend, generatetoken }; 
+    newFriendRequest, acceptFriendRequest, deleteFriend, generatetoken, sendFriendRequest, getFriendRequests }; 
 
 

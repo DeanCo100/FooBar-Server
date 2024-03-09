@@ -103,14 +103,15 @@ const getFriendPosts = async (token, usernameFriend) => {
     }
   };
 
-// Service function to fetch all posts
+// Service function to fetch all posts in descending order by creation date
 const getAllPosts = async () => {
-    // Fetch all posts from the database
-    const posts = await Post.find();
-    if (!posts) {
-      throw new Error('There are no posts yet');
-    }
-    return posts;
+  // Fetch all posts from the database, sorted by creation date in descending order
+  const posts = await Post.find().sort({ postTime: -1 });
+  if (!posts) {
+    throw new Error('There are no posts yet');
+  }
+  return posts;
 };
+
 
 module.exports = { createPost, getPostById ,updatePost, deletePost, getAllPosts, getFriendPosts}

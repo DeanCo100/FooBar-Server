@@ -1,5 +1,6 @@
 // Import the user service for handling user-related operations
 const userService = require ('../services/user');
+const User = require ('../models/user');
 
 // Function to create a new user
 const createUser = async (req, res) => {
@@ -71,17 +72,6 @@ const getFriendsList = async (req, res) => {
     res.status(500).json({ error: ['Failed to fetch friends list'] });
   }
 };
-//adds a new friend request
-const newFriendRequest = async (req, res) => {
-  const token = req.headers.authorization.split(' ')[1];
-  try {
-    const response = await userService.newFriendRequest(req.params.username, token);
-    res.json(response);
-  } catch (error) {
-    console.error('Controller error:', error.message);
-    res.status(404).json({ error: [error.message] });
-  }
-};
 //accepts a friend request
 const acceptFriendRequest = async (req, res) => {
   try {
@@ -105,10 +95,57 @@ const deleteFriend = async (req, res) => {
     res.status(500).json({ error: [error.message] });
   }
 };
+// Controller function to handle sending friend requests
+const sendFriendRequest = async (req, res) => {
+  const { username, friendUsername } = req.body;
+
+  try {
+    console.log("Sender Username:", username);
+    console.log("Friend Username:", friendUsername);
+    // Find the user who is sending the friend request
+    const sender = await User.findOne({ username });
+
+    // Find the user who is receiving the friend request
+    const receiver = await User.findOne({ username: friendUsername });
 
 
+    // console.log("Sender:", sender);
+    // console.log("Receiver:", receiver);
+    if (!sender || !receiver) {
+      return res.status(404).json({ message: "One of the users does not exist" });
+    }
 
-module.exports = { createUser, loginUser, getUserProfile, deleteUser,
-   updateUser,deleteFriend,acceptFriendRequest,newFriendRequest,getFriendsList }
+    // Add friendId to the received friend requests of the receiver
+    receiver.friendRequests.received.push(sender._id);
+    await receiver.save();
+
+    // Add friendId to the sent friend requests of the sender
+    sender.friendRequests.sent.push(receiver._id);
+    await sender.save();
+
+    console.log("Sender's Friend Requests (Sent):", sender.friendRequests.sent);
+    console.log("Receiver's Friend Requests (Received):", receiver.friendRequests.received);
+
+    // Return success response
+    res.status(200).json({ message: "Friend request sent successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to send friend request. Please try again." });
+  }
+};
+const getFriendRequests = async (req, res) => {
+  const { username } = req.params;
+  console.log('Received request for user:', username); // Log the received username
+  try {
+    const friendRequests = await userService.getFriendRequests(username);
+    res.status(200).json(friendRequests);
+  } catch (error) {
+    console.error('Controller error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch friend requests' });
+  }
+};
+module.exports = { createUser, loginUser, getUserProfile, deleteUser, 
+   updateUser, deleteFriend, acceptFriendRequest, getFriendsList, sendFriendRequest, getFriendRequests
+  }
 // We need to give a JWT to the user when he log in.
 
