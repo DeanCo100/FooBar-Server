@@ -90,7 +90,10 @@ const getFriendPosts = async (token, usernameFriend) => {
   const loggedInUsername = decoded.username;
   // Check if the logged-in user and the poster are friends
   const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
-  const desiredUser = await User.findOne({ username: usernameFriend });
+  // const desiredUser = await User.findOne({ username: usernameFriend });
+  const desiredUser = await User.findOne({ username: usernameFriend }).populate({ path: 'posts', options: { sort: { postTime: -1 } } }); // Populate the posts field and sort by createdAt in descending order
+
+
   if (!loggedInUser) {
      throw new Error('User not found');
   }
