@@ -48,7 +48,7 @@ router.route('/:id/posts/:pid')
 //routes for creating a post and getting all posts           
 router.route('/:id/posts')
              // maybe need to add another middleware method
-             //\.get(isValidToken,postController.getAllPosts)
+             .get(isValidToken,postController.getFriendPosts)
              .post(isValidToken,postController.createPost)
 
 module.exports = router;
