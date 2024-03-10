@@ -111,15 +111,63 @@ const getFriendPosts = async (token, usernameFriend) => {
   }
 };
 
-// Service function to fetch all posts in descending order by creation date
-const getAllPosts = async () => {
-  // Fetch all posts from the database, sorted by creation date in descending order
-  const posts = await Post.find().sort({ postTime: -1 });
-  if (!posts) {
-    throw new Error('There are no posts yet');
+// Service function to fetch a maximum of 25 posts, consisting of the newest posts from non-friends and friends of the connected user
+const getFeedPosts = async (decodedUsername) => {
+  try {
+    // Find the connected user and populate the 'friends' field
+    const connectedUser = await User.findOne({ username: decodedUsername }).populate('friends');
+
+    if (!connectedUser) {
+      throw new Error('Connected user not found');
+    }
+
+    // Extract the usernames of the connected user's friends
+    const friendUsernames = connectedUser.friends.map(friend => friend.username);
+
+    console.log('Friend usernames:', friendUsernames);
+
+    // Fetch the newest 5 posts from non-friends
+    const nonFriendPosts = await Post.find({ posterUsername: { $nin: friendUsernames } })
+      .sort({ postTime: -1 })
+      .limit(5);
+
+    // Fetch the newest 20 posts from friends
+    const friendPosts = await Post.find({ posterUsername: { $in: friendUsernames } })
+      .sort({ postTime: -1 })
+      .limit(20);
+
+    console.log('Friend posts:', friendPosts);
+
+    // Combine the posts from non-friends and friends
+    let combinedPosts = [...nonFriendPosts, ...friendPosts];
+
+    // Sort the combined posts by postTime in descending order
+    combinedPosts.sort((a, b) => new Date(b.postTime) - new Date(a.postTime));
+
+    // Return a maximum of 25 posts
+    combinedPosts = combinedPosts.slice(0, 25);
+
+    return combinedPosts;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch posts');
   }
-  return posts;
 };
 
 
-module.exports = { createPost, getPostById ,updatePost, deletePost, getAllPosts, getFriendPosts}
+
+
+
+
+// 
+// const getAllPosts = async () => {
+//   // Fetch all posts from the database, sorted by creation date in descending order
+//   const posts = await Post.find().sort({ postTime: -1 });
+//   if (!posts) {
+//     throw new Error('There are no posts yet');
+//   }
+//   return posts;
+// };
+
+
+module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts}
