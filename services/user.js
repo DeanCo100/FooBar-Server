@@ -128,20 +128,49 @@ const getFriendsList = async (username) => {
     throw new Error('Failed to retrieve friends list');
   }
 };
-
-// Service function to send friend requests
+// Service function to handle friend requests send
 const sendFriendRequest = async (username, friendUsername) => {
   try {
-    // Send a POST request to the server to send the friend request
-    const response = await axios.post(`http://localhost:8080/api/users/send-friend-request`, {
-      username,
-      friendId: friendUsername
-    });
-    return response.data;
+    // Find the sender and receiver users in the database
+    const sender = await User.findOne({username});
+    const receiver = await User.findOne({username: friendUsername});
+
+    // Check if sender and receiver exist
+    if (!sender || !receiver) {
+      throw { message: 'Sender or receiver not found' };
+    }
+
+    // Check if sender already sent a friend request to receiver
+    if (sender.friendRequests.sent.includes(receiver._id)) {
+      throw { message: 'You already sent a request to this user. Wait for their response.' };
+    }
+    console.log('The receiver:');
+    console.log(receiver);
+    // Check if receiver already sent a friend request to sender
+    if (sender.friendRequests.received.includes(receiver._id)) {
+
+    // if (receiver.friendRequests.received.includes(sender._id)) {
+      throw { message: 'This user already sent you a request. Approve it, don\'t be rude.' };
+    }
+
+
+    // Update sender's friend requests
+    sender.friendRequests.sent.push(receiver._id);
+    await sender.save();
+    
+    // Add sender to the received friend requests of the receiver
+    receiver.friendRequests.received.push(sender._id);
+    await receiver.save();
+
+    // Return success or handle any other necessary operations
+    return "Friend request sent successfully";
   } catch (error) {
-    throw new Error('Failed to send friend request. Please try again.');
+    console.error(error);
+    // throw new Error('Failed to send friend request');
+    throw error;
   }
 };
+
 
 // Service function to fetch friend requests received by the user
 const getFriendRequests = async (username) => {

@@ -1,4 +1,6 @@
 const postService = require ('../services/post');
+const jwt = require("jsonwebtoken")
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // Function to create a new post
 // REMARK: will be changed later
@@ -30,10 +32,14 @@ const getFriendPosts = async (req, res) => {
 };
 
 // Controller function to handle fetching all posts
-const getAllPosts = async (req, res) => {
+const getFeedPosts = async (req, res) => {
   try {
+    // Decode the JWT to get the username of the connected user
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, SECRET_KEY);
+    const decodedUsername = decodedToken.username;
     // Fetch all posts from the database
-    const posts = await postService.getAllPosts();
+    const posts = await postService.getFeedPosts(decodedUsername);
     res.json(posts);
   } catch (error) {
     console.error(error);
@@ -84,5 +90,5 @@ const deletePost = async (req, res) => {
 
 
 
-module.exports = { createPost, updatePost, deletePost, getFriendPosts, getAllPosts}
+module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts}
 // We need to give a JWT to the user when he log in.
