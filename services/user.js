@@ -3,6 +3,8 @@ const User = require('../models/user');
 const Post = require('../models/post');
 const jwt = require("jsonwebtoken")
 const SECRET_KEY = process.env.SECRET_KEY;
+const mongoose = require('mongoose');
+
 // Function to create a user
 const createUser = async (username, displayName, password, profilePic) => {
   // Check if the DB if the username is already exists
@@ -127,123 +129,146 @@ const getFriendsList = async (username) => {
   }
 };
 
-const newFriendRequest = async (username,token) => {
+// Service function to send friend requests
+const sendFriendRequest = async (username, friendUsername) => {
   try {
-    // Step 1: Decode the token to extract the sender's username
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const senderUsername = decoded.username; // Assuming the username is stored in the token payload
-
-    if (!senderUsername) {
-      throw new Error('Sender username not found in token');
-    }
-
-    // Step 2: Find the sender and receiver in the database
-    const sender = await User.findOne({ username: senderUsername });
-    const receiver = await User.findOne({ username: receiverUsername });
-
-    if (!sender || !receiver) {
-      throw new Error('Sender or receiver not found');
-    }
-
-    // Step 3: Update the sender's `friendRequests.sent`
-    if (!sender.friendRequests.sent.includes(receiver._id)) {
-      sender.friendRequests.sent.push(receiver._id);
-      await sender.save();
-    }
-
-    // Step 4: Update the receiver's `friendRequests.received`
-    if (!receiver.friendRequests.received.includes(sender._id)) {
-      receiver.friendRequests.received.push(sender._id);
-      await receiver.save();
-    }
-    // Return some confirmation/message or updated document(s)
-    return { message: 'Friend request sent successfully.' };
+    // Send a POST request to the server to send the friend request
+    const response = await axios.post(`http://localhost:8080/api/users/send-friend-request`, {
+      username,
+      friendId: friendUsername
+    });
+    return response.data;
   } catch (error) {
-    console.error('Error sending friend request:', error);
-    throw new Error('Failed to send friend request');
+    throw new Error('Failed to send friend request. Please try again.');
   }
 };
 
-
-
-const acceptFriendRequest = async (username,friendsUsername) => {
+// Service function to fetch friend requests received by the user
+const getFriendRequests = async (username) => {
   try {
-    // Find both users
+    console.log(username);
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    // Retrieve the received friend requests
+    const receivedRequests = user.friendRequests.received;
+    // Fetch user details for each friend request
+    const friendRequestsDetails = await Promise.all(receivedRequests.map(async (friendId) => {
+      // Find the user associated with the friend request
+      const friendUser = await User.findById(friendId);
+
+      if (!friendUser) {
+        throw new Error(`User with ID ${friendId} not found`);
+      }
+
+      // Extract relevant details from the user
+      return {
+        userId: friendUser._id,
+        displayName: friendUser.displayName,
+        profilePic: friendUser.profilePic
+      };
+    }));
+    console.log('THE DETAILS IN THE SERVICE: ', friendRequestsDetails);
+    return friendRequestsDetails;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Service function to remove a friend request from both of the friend and user relevant lists
+const removeFriendRequest = async (username, friendId) => {
+  try {
+    // Find the user's ID based on the username
     const user = await User.findOne({ username: username });
-    const friend = await User.findOne({ username: friendsUsername });
 
-    if (!user || !friend) {
-      throw new Error('One or both users not found');
+    if (!user) {
+      throw new Error('User not found');
     }
 
-    // Verify the friend request exists
-    const requestExists = user.friendRequests.received.some(request => request.equals(friend._id));
-    if (!requestExists) {
-      throw new Error('Friend request does not exist');
-    }
+    // Remove friendId from the received requests of the user
+    await User.findByIdAndUpdate(user._id, { $pull: { 'friendRequests.received': friendId } });
 
-    // Remove the friend request from user's received and friend's sent
-    user.friendRequests.received.pull(friend._id);
-    friend.friendRequests.sent.pull(user._id);
+     // Find the friend based on the friendId
+     const friend = await User.findById(friendId);
 
-    // Add each other to friends list if not already friends
-    if (!user.friends.includes(friend._id)) {
-      user.friends.push(friend._id);
-    }
-    if (!friend.friends.includes(user._id)) {
-      friend.friends.push(user._id);
-    }
+     if (!friend) {
+       throw new Error('Friend not found');
+     }
+      // Remove userId from the sent requests of the friend
+      await User.findByIdAndUpdate(friend._id, { $pull: { 'friendRequests.sent': user._id } });
 
-    // Save changes
-    await user.save();
-    await friend.save();
-
-    return { message: `${friendsUsername} has been added to your friends list.` };
   } catch (error) {
-    console.error('Error accepting friend request:', error);
-    throw new Error('Failed to accept friend request');
+    throw new Error('Failed to remove friend request');
   }
 };
 
-const deleteFriend = async (username,friendUsername) => {
+// Service function to add a friend for both of user and friend
+const addFriend = async (username, friendId) => {
   try {
-    // Find both users
-    const user = await User.findOne({ username: username }).populate('friends');
-    const friend = await User.findOne({ username: friendUsername }).populate('friends');
+    // Find the user's ID based on the username
+    const user = await User.findOne({ username: username });
+    const friend = await User.findById(friendId);
 
     if (!user || !friend) {
       throw new Error('User or friend not found');
     }
 
-    // Check if they are indeed friends
-    const userIsFriend = user.friends.some(f => f.username === friendUsername);
-    const friendIsUserFriend = friend.friends.some(f => f.username === username);
+    // Add friendId to the user's friends list
+    await User.findByIdAndUpdate(user._id, { $addToSet: { friends: friendId } });
+    
+    // Add userId to the friend's friends list
+    await User.findByIdAndUpdate(friend._id, { $addToSet: { friends: user._id } });
+  } catch (error) {
+    throw new Error('Failed to add friend for both users');
+  }
+};
+// Service function to get ALL user details by ID
+const getUserById = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    return user;
+  } catch (error) {
+    throw new Error('Failed to get user details');
+  }
+};
+// Service function to remove a friend
+const removeFriend = async (userId, friendId) => {
+  try {
+    // Remove friendId from the friends list of the user
+    await User.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
 
-    if (!userIsFriend || !friendIsUserFriend) {
-      throw new Error('Not friends');
+    // Remove userId from the friends list of the friend
+    await User.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
+  } catch (error) {
+    throw new Error('Failed to remove friend');
+  }
+};
+// Service function to fetch a user's friends
+const getUserFriends = async (username) => {
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      throw new Error('User not found');
     }
 
-    // Remove friend from user's friends list
-    user.friends.pull(friend._id);
-    // Remove user from friend's friends list
-    friend.friends.pull(user._id);
+    // Retrieve the user's friends and their relevant details
+    const friends = await User.find({ _id: { $in: user.friends } }, { profilePic: 1, displayName: 1 });
 
-    // Save the updated users
-    await user.save();
-    await friend.save();
-
-    return { message: `${friendUsername} has been removed from your friends list.` };
+    return friends;
   } catch (error) {
-    console.error('Error deleting friend:', error);
-    throw new Error('Failed to delete friend');
+    throw new Error('Failed to fetch user friends');
   }
 };
 
 
 
-
 module.exports = { createUser, loginUser, getUserProfile,
    getUserByUsername, deleteUser, updateUser, getFriendsList,
-    newFriendRequest, acceptFriendRequest, deleteFriend, generatetoken }; 
+     generatetoken, sendFriendRequest, getFriendRequests, addFriend, removeFriendRequest, getUserById, removeFriend, getUserFriends }; 
 
 

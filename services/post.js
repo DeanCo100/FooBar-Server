@@ -90,27 +90,36 @@ const getFriendPosts = async (token, usernameFriend) => {
   const loggedInUsername = decoded.username;
   // Check if the logged-in user and the poster are friends
   const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
-  const desiredUser = await User.findOne({ username: usernameFriend });
+  // const desiredUser = await User.findOne({ username: usernameFriend });
+  const desiredUser = await User.findOne({ username: usernameFriend }).populate({ path: 'posts', options: { sort: { postTime: -1 } } }); // Populate the posts field and sort by createdAt in descending order
+
+
   if (!loggedInUser) {
      throw new Error('User not found');
   }
-  const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
-  if (areFriends) {
-      return { areFriends: true, friendPosts: desiredUser.posts};
+  if (loggedInUsername === usernameFriend) {
+    // If the logged-in user is viewing their own posts
+    return { areFriends: true, friendPosts: desiredUser.posts };
   } else {
+    const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
+    if (areFriends) {
+      return { areFriends: true, friendPosts: desiredUser.posts };
+    } else {
       // If they are not friends, respond with an error message
       return { areFriends: false, friendPosts: [] };
     }
-  };
-
-// Service function to fetch all posts
-const getAllPosts = async () => {
-    // Fetch all posts from the database
-    const posts = await Post.find();
-    if (!posts) {
-      throw new Error('There are no posts yet');
-    }
-    return posts;
+  }
 };
+
+// Service function to fetch all posts in descending order by creation date
+const getAllPosts = async () => {
+  // Fetch all posts from the database, sorted by creation date in descending order
+  const posts = await Post.find().sort({ postTime: -1 });
+  if (!posts) {
+    throw new Error('There are no posts yet');
+  }
+  return posts;
+};
+
 
 module.exports = { createPost, getPostById ,updatePost, deletePost, getAllPosts, getFriendPosts}
