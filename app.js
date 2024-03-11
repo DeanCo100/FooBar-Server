@@ -33,4 +33,3 @@ app.use('/api/posts', posts);
 
 // Start the server on the specified port
 app.listen(process.env.PORT);
-// To run with the local/test environment, set the NODE_ENV variable: "SET NODE_ENV=local/test"

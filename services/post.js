@@ -188,39 +188,5 @@ const updatePostLikeStatus = async (username, postId, isLiked) => {
     return { success: false, message: 'Internal server error.' };
   }
 };
-//   try {
-//     // Find the post by postId
-//     const post = await Post.findById(postId);
-
-//     if (!post) {
-//       return { success: false, message: 'Post not found.' };
-//     }
-
-//     // Find the user by username
-//     const user = await User.findOne({ username });
-
-//     if (!user) {
-//       return { success: false, message: 'User not found.' };
-//     }
-
-//     // Check if the user has already liked the post
-//     // const alreadyLiked = post.likes.includes(user._id);
-
-//     if (!isLiked) {
-//       // Add the user to the likes list
-//       post.likes.push(user._id);
-//     } else {
-//       // Remove the user from the likes list
-//       post.likes = post.likes.filter(like => like.toString() !== user._id.toString());
-//     } 
-//       // Save the updated post
-//       await post.save();
-//       return { success: true };
-//   } catch (error) {
-//     console.error(error);
-//     return { success: false, message: 'Internal server error.' };
-//   }
-// };
-
 module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus
 }

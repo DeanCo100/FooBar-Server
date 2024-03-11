@@ -60,18 +60,6 @@ const updateUser = async (req, res) => {
     res.status(404).json({ error: ['User not found'] });
   }
 };
-// //gets the friends list of a user
-// const getFriendsList = async (req, res) => {
-//   try {
-//     const friendsList = await userService.getFriendsList(req.params.id); // Make sure to pass the correct parameter
-//     if (!friendsList) {
-//       return res.status(404).json({ error: ['User not found'] });
-//     }
-//     res.status(201).json(friendsList);
-//   } catch (error) {
-//     res.status(500).json({ error: ['Failed to fetch friends list'] });
-//   }
-// };
 // Controller function to handle sending friend requests
 const sendFriendRequest = async (req, res) => {
   try {
@@ -89,7 +77,7 @@ const sendFriendRequest = async (req, res) => {
     res.status(500).json({ message: errorMessage });
   }
 };
-
+// Function to get friend requests
 const getFriendRequests = async (req, res) => {
   console.log('Request params:', req.params); // Log the request parameters
   const { id: username } = req.params; // Rename id to username
@@ -148,11 +136,9 @@ const removeFriendOrRequest = async (req, res) => {
     if (user.friends.includes(fid) && friend.friends.includes(user._id)) {
       // If users are already friends, remove them from each other's friends list
       await userService.removeFriend(user._id, fid);
-      // await userService.removeFriend(fid, user._id);
     } else {
       // If not friends, remove the friend request from each other's lists
       await userService.removeFriendRequest(user.username, fid);
-      // await userService.removeFriendRequest(fid, user._id);
     }
 
     res.status(204).send(); // No content in response
@@ -181,5 +167,4 @@ const getUserFriends = async (req, res) => {
 module.exports = { createUser, loginUser, getUserProfile, deleteUser, 
    updateUser, acceptFriendRequest, sendFriendRequest, getFriendRequests, acceptFriendRequest, removeFriendOrRequest, getUserFriends
   }
-// We need to give a JWT to the user when he log in.
 

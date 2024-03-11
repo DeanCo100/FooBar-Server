@@ -13,8 +13,6 @@ const express = require('express');
 // Create a router instance
 var router = express.Router();
 
-// Define routes for user-related operations
-
 // Route for creating a new user (POST request)
 router.route('/').post(userController.createUser);
 
