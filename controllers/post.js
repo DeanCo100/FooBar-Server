@@ -72,7 +72,6 @@ const updatePostLikeStatus = async (req, res) => {
   try {
     const { id, pid } = req.params; // id is the current user's username, pid is the post's id
     const { isLiked } = req.body;
-    console.log(isLiked);
     // Call the service function to update the post like status
     const response = await postService.updatePostLikeStatus(id, pid, isLiked);
 

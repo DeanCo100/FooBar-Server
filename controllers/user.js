@@ -79,13 +79,9 @@ const sendFriendRequest = async (req, res) => {
 };
 // Function to get friend requests
 const getFriendRequests = async (req, res) => {
-  console.log('Request params:', req.params); // Log the request parameters
   const { id: username } = req.params; // Rename id to username
-  console.log('Received request for user:', username); // Log the received username
   try {
     const friendRequestsDetails = await userService.getFriendRequests(username);
-    console.log('FRIEND REQUESTS:');
-    console.log(friendRequestsDetails);
     res.status(200).json(friendRequestsDetails);
    } catch (error) {
     console.error('Controller error:', error.message);

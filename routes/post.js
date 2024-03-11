@@ -2,9 +2,6 @@ const userController = require('../controllers/user');
 const postController = require('../controllers/post');
 
 const isValidToken = require('../middleware/tokenChecker');
-const compTokenId = require('../middleware/compTokenId');
-const friendsChecker = require('../middleware/friendsCheck');
-const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfCheck');
 const express = require('express');
 
 var router = express.Router();

@@ -136,8 +136,6 @@ const sendFriendRequest = async (username, friendUsername) => {
     if (sender.friendRequests.sent.includes(receiver._id)) {
       throw { message: 'You already sent a request to this user. Wait for their response.' };
     }
-    console.log('The receiver:');
-    console.log(receiver);
     // Check if receiver already sent a friend request to sender
     if (sender.friendRequests.received.includes(receiver._id)) {
     // if (receiver.friendRequests.received.includes(sender._id)) {
@@ -160,7 +158,6 @@ const sendFriendRequest = async (username, friendUsername) => {
 // Service function to fetch friend requests received by the user
 const getFriendRequests = async (username) => {
   try {
-    console.log(username);
     // Find the user by username
     const user = await User.findOne({ username });
     if (!user) {
@@ -182,7 +179,6 @@ const getFriendRequests = async (username) => {
         profilePic: friendUser.profilePic
       };
     }));
-    console.log('THE DETAILS IN THE SERVICE: ', friendRequestsDetails);
     return friendRequestsDetails;
   } catch (error) {
     throw new Error(error.message);

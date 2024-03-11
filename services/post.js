@@ -124,8 +124,6 @@ const getFeedPosts = async (decodedUsername) => {
     // Extract the usernames of the connected user's friends
     const friendUsernames = connectedUser.friends.map(friend => friend.username);
 
-    console.log('Friend usernames:', friendUsernames);
-
     // Fetch the newest 5 posts from non-friends
     const nonFriendPosts = await Post.find({ posterUsername: { $nin: friendUsernames } })
       .sort({ postTime: -1 })
@@ -135,9 +133,6 @@ const getFeedPosts = async (decodedUsername) => {
     const friendPosts = await Post.find({ posterUsername: { $in: friendUsernames } })
       .sort({ postTime: -1 })
       .limit(20);
-
-    console.log('Friend posts:', friendPosts);
-
     // Combine the posts from non-friends and friends
     let combinedPosts = [...nonFriendPosts, ...friendPosts];
 
@@ -173,12 +168,9 @@ const updatePostLikeStatus = async (username, postId, isLiked) => {
     if (isLiked && !post.likes.includes(userIdString)) {
       post.likes.push(userIdString);
       post.likeCount += 1; // Increment likeCount
-      console.log('TO ADD', post.likes);
     } else if (!isLiked && post.likes.includes(userIdString)) {
       post.likes = post.likes.filter(like => like.toString() !== userIdString);
       post.likeCount -= 1; // Decrement likeCount
-      console.log('TO REMOVE', post.likes);
-
     }
 
     await post.save();
