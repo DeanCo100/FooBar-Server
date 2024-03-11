@@ -37,38 +37,38 @@
 
 
 # UI Experience Demostration:
+1. Login page: (You need to click 'Create Account' button, to create an account)
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152458.png>)
-
+2. Sign Up page: (You can see in the next pic what is a valid input to create an account)
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152526.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152608.png>)
-
+3. After you created an account and logged in, that's the Feed page you'll see:
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152813.png>)
-
+4. On the left side, you have buttons for edit profile, delete your profile, log out and toggle between light to dark mode:
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152827.png>)
+5. By click the 'Whats On Your Mind', You will be able to add a post.
+![alt text](<screenshotsUI/Screenshot 2024-03-11 160558.png>) 
 
-![alt text](<screenshotsUI/Screenshot 2024-03-11 152900.png>)
-
-![alt text](<screenshotsUI/Screenshot 2024-03-11 152950.png>)
+![alt text](<screenshotsUI/Screenshot 2024-03-11 160621.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153006.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153101.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153122.png>)
+6. By clicking on a user's profile pic or name in his post, you will be able to send him a friend request (if you aren't firends yet)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153135.png>)
-
-![alt text](<screenshotsUI/Screenshot 2024-03-11 153143.png>)
-
+7. You can comment and like posts (note: the DB isn't supporting comments, so its only UI)
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153237.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153354.png>)
-
+8. You can not edit or delete posts that you didn't post.
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153418.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153435.png>)
-
+9. You can EDIT or DELTE your own posts.
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153456.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153521.png>)
@@ -76,7 +76,7 @@
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153623.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153638.png>)
-
+10. By clicking a profile pic or a name displayed on a post of a user that is your friend, you'll see only his posts, with an option to see his friends.
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153652.png>)
 
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 153705.png>)
