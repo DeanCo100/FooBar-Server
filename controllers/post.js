@@ -74,6 +74,30 @@ const deletePost = async (req, res) => {
   }
 };
 
+// Function to handle the like
+const updatePostLikeStatus = async (req, res) => {
+  try {
+    const { id, pid } = req.params; // id is the current user's username, pid is the post's id
+    const { isLiked } = req.body;
+    console.log(isLiked);
+    // Call the service function to update the post like status
+    const response = await postService.updatePostLikeStatus(id, pid, isLiked);
+
+    // Check if the service function was successful
+    if (response.success) {
+      // Return success response to the client
+      return res.json({ success: true, likeCount: response.likeCount });
+    } else {
+      // Return failure response to the client with appropriate message
+      return res.status(404).json({ success: false, message: response.message });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
+
 // Function to fill the feed with posts
 // REMARKS: 1. sorted list of: 20 posts of friends, 5 posts of other users
 //          2. which variable do I need to send to the service method
@@ -90,5 +114,6 @@ const deletePost = async (req, res) => {
 
 
 
-module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts}
+module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus
+}
 // We need to give a JWT to the user when he log in.

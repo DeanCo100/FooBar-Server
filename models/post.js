@@ -37,7 +37,12 @@ const PostSchema = new Schema ({
         return `${year}-${month}-${day} ${hour}:${minutes}`;
     }
   },
-})
+  likes: [{ type: Schema.Types.ObjectId, ref: 'User' }], // Array of User references who liked the post
+  likeCount: {
+    type: Number,
+    default: 0
+  }
+});
 
 const Post = mongoose.model('Post', PostSchema);
 

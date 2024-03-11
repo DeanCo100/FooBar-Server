@@ -91,7 +91,8 @@ const updateUser = async (username, displayName, profilePic) => {
 
 // Function to get a user's profile by username
 const getUserProfile = async (username) => {
-  return await User.findOne({ username }).select('username displayName profilePic');
+  // return await User.findOne({ username }).select('username displayName profilePic');
+  return await User.findOne({ username }).select('_id username displayName profilePic');
 }
 
 //  A function to generate a unique token every time a user is logging in
