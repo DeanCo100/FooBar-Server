@@ -43,16 +43,9 @@ router.delete('/:id/friends/:fid', isValidToken, userController.removeFriendOrRe
 // GET user's friends
 router.get('/:id/friends', isValidToken , userController.getUserFriends);
 
+// Route to handle post like or unlike
+router.patch('/:id/posts/:pid/like', isValidToken, postController.updatePostLikeStatus);
 
-// //routes for getting friends list, new friend request
-// router.route('/:id/friends')
-//     .get(friendsOrHimselfChecker,userController.getFriendsList)
-//     .post(userController.newFriendRequest)
-
-//routes for accepting friend request and deleting friend
-// router.route('/:id/friends/:fid')
-//             .patch(compTokenId,userController.acceptFriendRequest)
-//             .delete(compTokenId,userController.deleteFriend)
 //routes for updatind and deleting a post
 router.route('/:id/posts/:pid')
              .patch(isValidToken, postController.updatePost)

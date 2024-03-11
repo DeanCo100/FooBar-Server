@@ -153,21 +153,74 @@ const getFeedPosts = async (decodedUsername) => {
     throw new Error('Failed to fetch posts');
   }
 };
+// Function to handle like
+const updatePostLikeStatus = async (username, postId, isLiked) => {
 
+  try {
+    let post = await Post.findById(postId);
 
+    if (!post) {
+      return { success: false, message: 'Post not found.' };
+    }
+    // Find the user based on the provided username
+    let user = await User.findOne({ username });
 
+    if (!user) {
+      return { success: false, message: 'User not found.' };
+    }
+    const userIdString = user._id.toString();
 
+    if (isLiked && !post.likes.includes(userIdString)) {
+      post.likes.push(userIdString);
+      post.likeCount += 1; // Increment likeCount
+      console.log('TO ADD', post.likes);
+    } else if (!isLiked && post.likes.includes(userIdString)) {
+      post.likes = post.likes.filter(like => like.toString() !== userIdString);
+      post.likeCount -= 1; // Decrement likeCount
+      console.log('TO REMOVE', post.likes);
 
+    }
 
-// 
-// const getAllPosts = async () => {
-//   // Fetch all posts from the database, sorted by creation date in descending order
-//   const posts = await Post.find().sort({ postTime: -1 });
-//   if (!posts) {
-//     throw new Error('There are no posts yet');
+    await post.save();
+    return { success: true, likeCount: post.likeCount };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Internal server error.' };
+  }
+};
+//   try {
+//     // Find the post by postId
+//     const post = await Post.findById(postId);
+
+//     if (!post) {
+//       return { success: false, message: 'Post not found.' };
+//     }
+
+//     // Find the user by username
+//     const user = await User.findOne({ username });
+
+//     if (!user) {
+//       return { success: false, message: 'User not found.' };
+//     }
+
+//     // Check if the user has already liked the post
+//     // const alreadyLiked = post.likes.includes(user._id);
+
+//     if (!isLiked) {
+//       // Add the user to the likes list
+//       post.likes.push(user._id);
+//     } else {
+//       // Remove the user from the likes list
+//       post.likes = post.likes.filter(like => like.toString() !== user._id.toString());
+//     } 
+//       // Save the updated post
+//       await post.save();
+//       return { success: true };
+//   } catch (error) {
+//     console.error(error);
+//     return { success: false, message: 'Internal server error.' };
 //   }
-//   return posts;
 // };
 
-
-module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts}
+module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus
+}

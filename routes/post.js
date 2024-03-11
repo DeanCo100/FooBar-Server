@@ -13,4 +13,5 @@ var router = express.Router();
 //router.route('/').post(postController.createPost);
 router.route('/').get(isValidToken, postController.getFeedPosts);
 
+
 module.exports = router;
