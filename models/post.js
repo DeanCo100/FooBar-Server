@@ -10,9 +10,9 @@ const PostSchema = new Schema ({
   username: { //THE USER'S DISPLAY NAME
     type: String,
     required: true
-  }, //**** Maybe I need to have the token aswell here, to identify the user's posts */
+  }, 
   userPic: { // THE USER'S PICTURE
-    type: String, // It whould be treated like a different type because its a picture, I need to figure it out.
+    type: String, 
     required: true
   },
   postText : {

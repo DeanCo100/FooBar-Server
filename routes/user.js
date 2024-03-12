@@ -3,17 +3,12 @@ const userController = require('../controllers/user');
 const postController = require('../controllers/post');
 
 const isValidToken = require('../middleware/tokenChecker');
-const compTokenId = require('../middleware/compTokenId');
-const friendsChecker = require('../middleware/friendsCheck');
-const friendsOrHimselfChecker = require('../middleware/friendsOrHimselfCheck');
 const { acceptFriendRequest} = require('../controllers/user');
 
 const express = require('express');
 
 // Create a router instance
 var router = express.Router();
-
-// Define routes for user-related operations
 
 // Route for creating a new user (POST request)
 router.route('/').post(userController.createUser);
