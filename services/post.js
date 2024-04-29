@@ -41,6 +41,12 @@ const createPost = async (posterUsername ,username, userPic, postText, postImage
 
 // Function to update post by id
 const updatePost = async (pid, newText, newPicture) => {
+
+  try {
+    //  Illegal post text
+    if (checkBlacklistedURL(newText)) {
+      throw new Error('The post includes a BLACKLISTED url, Please try again');
+    }
   // Find the post by its ID
   const post = await getPostById(pid);
   if (!post){
@@ -49,9 +55,6 @@ const updatePost = async (pid, newText, newPicture) => {
   // Update the post fields
   post.postText = newText;
   post.postImage = newPicture;
-
-  // Here is where I need to conduct the check of the blacklisted url's.
-
 
   // Save the updated post
   const updatedPost = await post.save();
@@ -68,6 +71,10 @@ const updatePost = async (pid, newText, newPicture) => {
     await user.save();
   }
   return updatePost;
+  } catch (error) {
+  // Throw the error so the controller can catch it.
+    throw error;
+  }
 };
 
 const getPostById = async (pid) => {

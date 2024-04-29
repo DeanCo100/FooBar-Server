@@ -27,7 +27,11 @@ const updatePost = async (req, res) => {
       req.body.postImage);
     res.json(post);
   } catch (error) {
-    res.status(404).json({ error: ['Post not found'] });
+    if (error.message === 'The post includes a BLACKLISTED url, Please try again') {
+      res.status(400).json({ error: ['The post includes a BLACKLISTED url, Please try again'] });
+    } else {
+      res.status(404).json({ error: ['Post not found'] });
+    }
   }
 };
 
