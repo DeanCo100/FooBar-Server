@@ -7,11 +7,31 @@ const createPost = async (req, res) => {
   //  I need to figure out how to use the user's picture and username.
   try {
       res.json(await postService.createPost(req.body.posterUsername,req.body.username, req.body.userPic, req.body.postText, req.body.postImage, req.body.postTime));
+    } catch (error) {
+      if (error.message === 'User not found') {
+        res.status(404).json({ error: ['User not found'] });
+      } else if (error.message === 'The post includes a BLACKLISTED url, Please try again') {
+        res.status(400).json({ error: ['The post includes a BLACKLISTED url, Please try again'] });
+      } else {
+        // Handle other unexpected errors
+        console.error(error);
+        res.status(500).json({ error: ['Internal server error'] });
+      }
+    }
+  };
+
+const updatePost = async (req, res) => {
+  try {
+    // Maybe need to change to : req.body.pid if will decide to add pid field to model
+    const post = await postService.updatePost(req.params.pid, req.body.postText,
+      req.body.postImage);
+    res.json(post);
   } catch (error) {
-      // Handle errors
-      res.status(404).json({ error: ['User not found'] });
+    res.status(404).json({ error: ['Post not found'] });
   }
 };
+
+
 
 // Returns the friend's posts.
 const getFriendPosts = async (req, res) => {
@@ -46,16 +66,6 @@ const getFeedPosts = async (req, res) => {
   }
 };
 
-const updatePost = async (req, res) => {
-  try {
-    // Maybe need to change to : req.body.pid if will decide to add pid field to model
-    const post = await postService.updatePost(req.params.pid, req.body.postText,
-      req.body.postImage);
-    res.json(post);
-  } catch (error) {
-    res.status(404).json({ error: ['Post not found'] });
-  }
-};
 
 // Function to delete an existing post
 const deletePost = async (req, res) => {
