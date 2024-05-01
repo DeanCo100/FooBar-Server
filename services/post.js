@@ -2,16 +2,18 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
-const checkBlacklistedURL = require('../utils/BloomFilterHelper');
+const { checkBlacklistedURL, checkInBloom } = require('../utils/BloomFilterHelper');
 
 
 
 const createPost = async (posterUsername ,username, userPic, postText, postImage, postTime) => {
   try {
+    // Await the result of checkBlacklistedURL
+    const isBlacklisted = await checkBlacklistedURL(postText);
 
-  if (checkBlacklistedURL(postText)) {
-    throw new Error('The post includes a BLACKLISTED url, Please try again');
-  }
+    if (isBlacklisted) {
+      throw new Error('The post includes a BLACKLISTED url, Please try again');
+    }
 
     // Save the new post
     const newPost = new Post ({ 
