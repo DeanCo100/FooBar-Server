@@ -59,6 +59,7 @@ client.on('error', (err) => {
 // Handle disconnection
 client.on('end', () => {
   console.log('Disconnected from server');
+  client.end();
 });
 
 
