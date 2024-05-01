@@ -41,9 +41,12 @@ const client = net.createConnection({ host: serverAddress, port: serverPort }, (
   // Once connected, you can send messages to the server
   console.log('Connected to TCP server');
 
-  // Example message: "ADD www.example.com"
-  const message = 'ADD www.example.com';
-  client.write(message); // Send message to the server
+ // Add blacklisted URLs to the Bloom filter
+ const blacklistedUrls = process.env.BLACKLISTED_URLS.split(',');
+ blacklistedUrls.forEach((url) => {
+   const message = `1 ${url}`;
+   client.write(message); // Send message to the server to add the URL to the Bloom filter
+ });
 });
 
 // Listen for data from the server
