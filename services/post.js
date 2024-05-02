@@ -34,6 +34,7 @@ const createPost = async (posterUsername ,username, userPic, postText, postImage
   // Add the new post to the user's posts array
   user.posts.push(savedPost._id);
   await user.save();
+  // console.log('UPLOAD POST');
   return savedPost;
   } catch (error) {
     // Throw the error so the controller can catch it.
