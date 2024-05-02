@@ -45,10 +45,13 @@ const createPost = async (posterUsername ,username, userPic, postText, postImage
 const updatePost = async (pid, newText, newPicture) => {
 
   try {
-    //  Illegal post text
-    if (checkBlacklistedURL(newText)) {
+    // Await the result of checkBlacklistedURL
+    const isBlacklisted = await checkBlacklistedURL(newText);
+
+    if (isBlacklisted) {
       throw new Error('The post includes a BLACKLISTED url, Please try again');
     }
+
   // Find the post by its ID
   const post = await getPostById(pid);
   if (!post){
