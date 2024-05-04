@@ -2,18 +2,29 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
+const { checkBlacklistedURL, checkInBloom } = require('../utils/BloomFilterHelper');
+
 
 
 const createPost = async (posterUsername ,username, userPic, postText, postImage, postTime) => {
-  // Save the new post
-  const newPost = new Post ({ 
-    posterUsername,
-    username, 
-    userPic,
-    postText,
-    postImage,
-    postTime
-  });
+  try {
+    // Await the result of checkBlacklistedURL
+    const isBlacklisted = await checkBlacklistedURL(postText);
+
+    if (isBlacklisted) {
+      throw new Error('The post includes a BLACKLISTED url, Please try again');
+    }
+
+    // Save the new post
+    const newPost = new Post ({ 
+      posterUsername,
+      username, 
+      userPic,
+      postText,
+      postImage,
+      postTime
+    });
+
   const savedPost = await newPost.save();
   // Retrieve the user by his username
   const user = await User.findOne({ username: posterUsername });
@@ -23,20 +34,25 @@ const createPost = async (posterUsername ,username, userPic, postText, postImage
   // Add the new post to the user's posts array
   user.posts.push(savedPost._id);
   await user.save();
+  // console.log('UPLOAD POST');
   return savedPost;
-};
-
-const getPostById = async (pid) => {
-  //const post = await Post.findOne({ _id: pid });
-  const post = await Post.findById(pid);
-  if (!post) {
-    throw new Error('Post not found');
+  } catch (error) {
+    // Throw the error so the controller can catch it.
+    throw error;
   }
-  return post;
 };
 
 // Function to update post by id
 const updatePost = async (pid, newText, newPicture) => {
+
+  try {
+    // Await the result of checkBlacklistedURL
+    const isBlacklisted = await checkBlacklistedURL(newText);
+
+    if (isBlacklisted) {
+      throw new Error('The post includes a BLACKLISTED url, Please try again');
+    }
+
   // Find the post by its ID
   const post = await getPostById(pid);
   if (!post){
@@ -45,6 +61,7 @@ const updatePost = async (pid, newText, newPicture) => {
   // Update the post fields
   post.postText = newText;
   post.postImage = newPicture;
+
   // Save the updated post
   const updatedPost = await post.save();
   // Update the user's posts array
@@ -60,7 +77,22 @@ const updatePost = async (pid, newText, newPicture) => {
     await user.save();
   }
   return updatePost;
+  } catch (error) {
+  // Throw the error so the controller can catch it.
+    throw error;
+  }
 };
+
+const getPostById = async (pid) => {
+  //const post = await Post.findOne({ _id: pid });
+  const post = await Post.findById(pid);
+  if (!post) {
+    throw new Error('Post not found');
+  }
+  return post;
+};
+
+
 
 // Function to delete post by id
 const deletePost = async (pid) => {
