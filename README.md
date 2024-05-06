@@ -52,6 +52,8 @@ https://github.com/DeanCo100/FooBar-Server/tree/WikiBranch/WIKI
 - We made the TCP server multithreaded.
 - We conducted relevant changes in the web server code and the UI's.
 - We created a connection between the TCP server (as a server) and the WEB server (as a client).
+- We modified the docker file from the first assignment, to make it suitable to the final project.
+  The docker files can be found in Foobar-Project repository.
 
 
 # UI Experience Demostration:
