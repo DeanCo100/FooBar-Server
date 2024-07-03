@@ -1,5 +1,10 @@
 # Welcome to FooBar (Server-Client Edition (This is the Server repo))
 
+## Link to the wiki folder:
+https://github.com/DeanCo100/FooBar-Server/tree/WikiBranch/WIKI
+
+
+
 ## About the project:
 
 #### Notes: 
@@ -40,6 +45,15 @@
 - We took screenshots (that we present below) to show you How it is like to use our social network.
 - We ENJOYED to use our program as users.
 - And of course, we submitted the completed project.
+
+
+#### Very lastly:
+- We created the TCP server in the first task repo.
+- We made the TCP server multithreaded.
+- We conducted relevant changes in the web server code and the UI's.
+- We created a connection between the TCP server (as a server) and the WEB server (as a client).
+- We modified the docker file from the first assignment, to make it suitable to the final project.
+  The docker files can be found in Foobar-Project repository.
 
 
 # UI Experience Demostration:
