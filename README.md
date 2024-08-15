@@ -23,39 +23,6 @@ https://github.com/DeanCo100/FooBar-Server/tree/WikiBranch/WIKI
 4. To get to the 'Feed' page, you first need to register anc create an account, and then you'll move back to the signIn page and you can connect with your details.
 5. Now, all you need to do is enjoy FooBar :).
 
-## About our work:
-
-
-#### Firstly:
-- We looked which API's we need to implement server-client.
-- We conducted a brainstorm about the changes that need to be done in the UI (WEB/ANDROID) and the necessary implementations in the Server..
-- We started to create the relevant server side (and DB of course) and simultaneously change the Client code by that.
-
-#### Secondly:
-- We worked at the beginning by creating a 'skeleton' of server.
-- Then, by the 'Ping-Pong' method, we modify the relevant section of tu Client code to communicate with the server and the DB.
-
-#### Thirdly:
-- We modified the relevant CSS of the Client code to fit the new modifications.
-- We made modifications in the Server code to support the complete relevant API's.
-
-#### Lastly:
-- We made last modifications in the code.
-- We conducted few 'User Reviews' to our program.
-- We took screenshots (that we present below) to show you How it is like to use our social network.
-- We ENJOYED to use our program as users.
-- And of course, we submitted the completed project.
-
-
-#### Very lastly:
-- We created the TCP server in the first task repo.
-- We made the TCP server multithreaded.
-- We conducted relevant changes in the web server code and the UI's.
-- We created a connection between the TCP server (as a server) and the WEB server (as a client).
-- We modified the docker file from the first assignment, to make it suitable to the final project.
-  The docker files can be found in Foobar-Project repository.
-
-
 # UI Experience Demostration:
 1. Login page: (You need to click 'Create Account' button, to create an account)
 ![alt text](<screenshotsUI/Screenshot 2024-03-11 152458.png>)
