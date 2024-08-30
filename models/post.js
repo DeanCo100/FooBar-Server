@@ -41,7 +41,8 @@ const PostSchema = new Schema ({
   likeCount: {
     type: Number,
     default: 0
-  }
+  },
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 const Post = mongoose.model('Post', PostSchema);

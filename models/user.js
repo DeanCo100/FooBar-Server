@@ -27,7 +27,8 @@ const UserSchema = new Schema ({
     sent: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
   },
 
-  posts: [{ type: Schema.Types.ObjectId, ref: 'Post'}] // Added posts list
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post'}], // Added posts list
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 })
 
 const User = mongoose.model('User', UserSchema);

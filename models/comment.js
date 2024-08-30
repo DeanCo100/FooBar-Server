@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 // Each comment should have The USERNAME, the USERPIC and the TEXT.
 // NOTE: Each user now should have a list of his comments (and only them he can delete).
 // NOTE: Each Post should have a list of his comments.
+// We Use DisplayName as the name of the user that displayed
 
 const CommentSchema = new Schema ({
   username: {
