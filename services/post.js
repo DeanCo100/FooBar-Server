@@ -1,10 +1,9 @@
 const Post = require('../models/post');
 const User = require('../models/user');
+const Comment = require('../models/comment');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 const { checkBlacklistedURL, checkInBloom } = require('../utils/BloomFilterHelper');
-
-
 
 const createPost = async (posterUsername ,username, userPic, postText, postImage, postTime) => {
   try {
@@ -212,5 +211,55 @@ const updatePostLikeStatus = async (username, postId, isLiked) => {
     return { success: false, message: 'Internal server error.' };
   }
 };
-module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus
+
+// The comment functions:
+const addComment = async (postId, username, displayName, profilePic, commentText) => {
+  try {
+    // Await the result of checkBlacklistedURL
+    const isBlacklisted = await checkBlacklistedURL(postText);
+
+    if (isBlacklisted) {
+      throw new Error('The post includes a BLACKLISTED url, Please try again');
+    }
+    // Create a new comment
+    const newComment = new Comment ({
+      username,
+      displayName,
+      profilePic,
+      commentText,
+      postId
+    });
+  
+// Save the new comment to the database
+const savedComment = await newComment.save();
+
+// Find the user by username
+const user = await User.findOne({ username });
+if (!user) {
+  throw new Error('User not found');
+}
+
+// Add the comment to the user's comments list and save the user
+user.comments.push(savedComment._id);
+await user.save();
+
+// Find the post by postId
+const post = await Post.findById(postId);
+if (!post) {
+  throw new Error('Post not found');
+}
+
+// Add the comment to the post's comments list and save the post
+post.comments.push(savedComment._id);
+await post.save();
+
+return savedComment;
+} catch (error) {
+// Throw the error so the controller can catch it
+throw error;
+}
+};
+
+
+module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus, addComment
 }

@@ -101,7 +101,24 @@ const updatePostLikeStatus = async (req, res) => {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
+}
+
+// Comment functions section:
+const addComment = async (req, res) => {
+  try {
+    const { postId } = req.params;  // Assuming postId is sent as a URL parameter
+    const { username, displayName, profilePic, commentText } = req.body;  // Extract necessary data from the request body
+
+    // Call the addComment function from postService and pass the necessary arguments
+    const savedComment = await postService.addComment(postId, username, displayName, profilePic, commentText);
+
+    // Send the saved comment back as a response
+    res.status(201).json({ success: true, comment: savedComment });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 };
 
-module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus
+module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus, addComment
 }
