@@ -114,71 +114,127 @@ const deletePost = async (pid) => {
   return post;
 };
 
+
+// **** OLD VERSION ****
 // Function to get posts of a friend
+// const getFriendPosts = async (token, usernameFriend) => {
+//   // Decode the token to get the username of the logged-in user
+//   const decoded = jwt.verify(token, SECRET_KEY);
+//   const loggedInUsername = decoded.username;
+//   // Check if the logged-in user and the poster are friends
+//   const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
+//   // const desiredUser = await User.findOne({ username: usernameFriend });
+//   const desiredUser = await User.findOne({ username: usernameFriend }).populate({ path: 'posts', options: { sort: { postTime: -1 } } }); // Populate the posts field and sort by createdAt in descending order
+
+
+//   if (!loggedInUser) {
+//      throw new Error('User not found');
+//   }
+//   if (loggedInUsername === usernameFriend) {
+//     // If the logged-in user is viewing their own posts
+//     return { areFriends: true, friendPosts: desiredUser.posts };
+//   } else {
+//     const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
+//     if (areFriends) {
+//       return { areFriends: true, friendPosts: desiredUser.posts };
+//     } else {
+//       // If they are not friends, respond with an error message
+//       return { areFriends: false, friendPosts: [] };
+//     }
+//   }
+// };
+
 const getFriendPosts = async (token, usernameFriend) => {
-  // Decode the token to get the username of the logged-in user
   const decoded = jwt.verify(token, SECRET_KEY);
   const loggedInUsername = decoded.username;
-  // Check if the logged-in user and the poster are friends
-  const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
-  // const desiredUser = await User.findOne({ username: usernameFriend });
-  const desiredUser = await User.findOne({ username: usernameFriend }).populate({ path: 'posts', options: { sort: { postTime: -1 } } }); // Populate the posts field and sort by createdAt in descending order
 
+  const loggedInUser = await User.findOne({ username: loggedInUsername }).populate('friends');
+  const desiredUser = await User.findOne({ username: usernameFriend })
+    .populate({ path: 'posts', options: { sort: { postTime: -1 } }, populate: { path: 'comments' } }); // Populate comments within posts
 
   if (!loggedInUser) {
-     throw new Error('User not found');
+    throw new Error('User not found');
   }
   if (loggedInUsername === usernameFriend) {
-    // If the logged-in user is viewing their own posts
     return { areFriends: true, friendPosts: desiredUser.posts };
   } else {
     const areFriends = loggedInUser.friends.some(friend => friend.username === usernameFriend);
     if (areFriends) {
       return { areFriends: true, friendPosts: desiredUser.posts };
     } else {
-      // If they are not friends, respond with an error message
       return { areFriends: false, friendPosts: [] };
     }
   }
 };
 
+//  **** OLD VERSION ****
 // Service function to fetch a maximum of 25 posts, consisting of the newest posts from non-friends and friends of the connected user
+// const getFeedPosts = async (decodedUsername) => {
+//   try {
+//     // Find the connected user and populate the 'friends' field
+//     const connectedUser = await User.findOne({ username: decodedUsername }).populate('friends');
+
+//     if (!connectedUser) {
+//       throw new Error('Connected user not found');
+//     }
+
+//     // Extract the usernames of the connected user's friends
+//     const friendUsernames = connectedUser.friends.map(friend => friend.username);
+
+//     // Fetch the newest 5 posts from non-friends
+//     const nonFriendPosts = await Post.find({ posterUsername: { $nin: friendUsernames } })
+//       .sort({ postTime: -1 })
+//       .limit(5);
+
+//     // Fetch the newest 20 posts from friends
+//     const friendPosts = await Post.find({ posterUsername: { $in: friendUsernames } })
+//       .sort({ postTime: -1 })
+//       .limit(20);
+//     // Combine the posts from non-friends and friends
+//     let combinedPosts = [...nonFriendPosts, ...friendPosts];
+
+//     // Sort the combined posts by postTime in descending order
+//     combinedPosts.sort((a, b) => new Date(b.postTime) - new Date(a.postTime));
+
+//     // Return a maximum of 25 posts
+//     combinedPosts = combinedPosts.slice(0, 25);
+
+//     return combinedPosts;
+//   } catch (error) {
+//     console.error(error);
+//     throw new Error('Failed to fetch posts');
+//   }
+// };
 const getFeedPosts = async (decodedUsername) => {
   try {
-    // Find the connected user and populate the 'friends' field
     const connectedUser = await User.findOne({ username: decodedUsername }).populate('friends');
-
     if (!connectedUser) {
       throw new Error('Connected user not found');
     }
 
-    // Extract the usernames of the connected user's friends
     const friendUsernames = connectedUser.friends.map(friend => friend.username);
 
-    // Fetch the newest 5 posts from non-friends
     const nonFriendPosts = await Post.find({ posterUsername: { $nin: friendUsernames } })
       .sort({ postTime: -1 })
-      .limit(5);
+      .limit(5)
+      .populate('comments');  // Populate comments
 
-    // Fetch the newest 20 posts from friends
     const friendPosts = await Post.find({ posterUsername: { $in: friendUsernames } })
       .sort({ postTime: -1 })
-      .limit(20);
-    // Combine the posts from non-friends and friends
-    let combinedPosts = [...nonFriendPosts, ...friendPosts];
+      .limit(20)
+      .populate('comments');  // Populate comments
 
-    // Sort the combined posts by postTime in descending order
+    let combinedPosts = [...nonFriendPosts, ...friendPosts];
     combinedPosts.sort((a, b) => new Date(b.postTime) - new Date(a.postTime));
 
-    // Return a maximum of 25 posts
-    combinedPosts = combinedPosts.slice(0, 25);
-
-    return combinedPosts;
+    return combinedPosts.slice(0, 25);  // Return a maximum of 25 posts
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch posts');
   }
 };
+
+
 // Function to handle like
 const updatePostLikeStatus = async (username, postId, isLiked) => {
 
@@ -216,11 +272,11 @@ const updatePostLikeStatus = async (username, postId, isLiked) => {
 const addComment = async (postId, username, displayName, profilePic, commentText) => {
   try {
     // Await the result of checkBlacklistedURL
-    const isBlacklisted = await checkBlacklistedURL(postText);
+    // const isBlacklisted = await checkBlacklistedURL(postText);
 
-    if (isBlacklisted) {
-      throw new Error('The post includes a BLACKLISTED url, Please try again');
-    }
+    // if (isBlacklisted) {
+    //   throw new Error('The post includes a BLACKLISTED url, Please try again');
+    // }
     // Create a new comment
     const newComment = new Comment ({
       username,
@@ -229,7 +285,8 @@ const addComment = async (postId, username, displayName, profilePic, commentText
       commentText,
       postId
     });
-  
+    console.log('In the addComment service: ' + newComment);
+
 // Save the new comment to the database
 const savedComment = await newComment.save();
 

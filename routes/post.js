@@ -7,6 +7,7 @@ const express = require('express');
 var router = express.Router();
 // Route to get the necessary posts to display on Feed
 router.route('/').get(isValidToken, postController.getFeedPosts);
+router.post('/:postId/comments', isValidToken, postController.addComment);
 
 
 module.exports = router;

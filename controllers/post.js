@@ -101,7 +101,7 @@ const updatePostLikeStatus = async (req, res) => {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
-}
+};
 
 // Comment functions section:
 const addComment = async (req, res) => {
@@ -119,6 +119,7 @@ const addComment = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
+
 
 module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus, addComment
 }
