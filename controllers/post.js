@@ -81,6 +81,17 @@ const deletePost = async (req, res) => {
   }
 };
 
+const deleteComment = async (req, res) => {
+    try {
+      // Extracting the CommentID and PostId
+      const { postId, commentId } = req.params;
+      const deletedComment = await postService.deleteComment(postId, commentId);
+      res.json(deletedComment);
+    } catch (error) {
+      res.status(404).json({ error: ['Comment not found'] });
+    }
+  };
+
 // Function to handle the like
 const updatePostLikeStatus = async (req, res) => {
   try {
@@ -120,6 +131,15 @@ const addComment = async (req, res) => {
   }
 };
 
+const editComment = async (req, res) => {
+  try {
 
-module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus, addComment
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+module.exports = { createPost, updatePost, deletePost, getFriendPosts, getFeedPosts, updatePostLikeStatus, addComment, editComment, deleteComment
 }

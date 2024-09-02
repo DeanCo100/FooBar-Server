@@ -82,6 +82,7 @@ const updatePost = async (pid, newText, newPicture) => {
   }
 };
 
+// Function to find a post by Id
 const getPostById = async (pid) => {
   //const post = await Post.findOne({ _id: pid });
   const post = await Post.findById(pid);
@@ -90,6 +91,15 @@ const getPostById = async (pid) => {
   }
   return post;
 };
+
+// Function to find a comment by Id
+const getCommentById = async (cid) => {
+  const comment = await Comment.findById(cid);
+  if (!comment) {
+    throw new Error('Comment not found');
+  }
+  return comment;
+}
 
 
 
@@ -114,7 +124,34 @@ const deletePost = async (pid) => {
   return post;
 };
 
+// Function handles the deletion of comment
+const deleteComment = async (pid, cid) => {
+  // Find the comment by its Id and the associated post by its Id
+  const comment = await getCommentById(cid);
+  const post = await getPostById(pid);
+  if (!comment) {
+    throw new Error('Comment not found');
+  }
+  if(!post) {
+    throw new Error ('Post not found');
+  }
+  // Find the user associated with this comment
+  const user = await User.findOne({username : comment.username});
+  if(!user) {
+    throw new Error('User not found');
+  }
+  // Remove the comment from the user comments list, post comments list
+  user.comments = user.comments.filter(commentId => !commentId.equals(comment._id));
+  post.comments = post.comments.filter(commentId => !commentId.equals(comment._id));
 
+  // Remove the comment from the comments database
+  await comment.deleteOne();
+  return comment;
+}
+
+const editComment = async () => {
+
+}
 // **** OLD VERSION ****
 // Function to get posts of a friend
 // const getFriendPosts = async (token, usernameFriend) => {
@@ -318,5 +355,5 @@ throw error;
 };
 
 
-module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus, addComment
+module.exports = { createPost, getPostById ,updatePost, deletePost, getFeedPosts, getFriendPosts, updatePostLikeStatus, addComment, editComment, deleteComment
 }
